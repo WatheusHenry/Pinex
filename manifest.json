@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Sidebar Extension",
+  "version": "1.0.0",
+  "description": "Uma sidebar que pode ser escondida e exibida",
+  "permissions": ["activeTab", "storage"],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"],
+      "css": ["dist/content.css"]
+    }
+  ],
+  "action": {
+    "default_title": "Toggle Sidebar"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["arrow.png", "viewer.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
