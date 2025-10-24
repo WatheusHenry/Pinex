@@ -27,7 +27,10 @@ const EmptyState = () => {
           strokeLinejoin="round"
         />
       </svg>
-      <p>Arraste imagens, vídeos ou GIFs aqui</p>
+      <p>Arraste imagens, vídeos, GIFs ou texto aqui</p>
+      <p style={{ fontSize: "12px", opacity: 0.7, marginTop: "8px" }}>
+        Ou clique com o botão direito em texto selecionado
+      </p>
     </div>
   );
 };

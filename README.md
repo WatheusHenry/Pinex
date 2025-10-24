@@ -6,6 +6,8 @@ Extensão moderna do Chrome construída com React + Vite que adiciona uma sideba
 
 - 📸 **Drag & Drop**: Arraste imagens diretamente da página
 - 📝 **Notas de Texto**: Crie e edite notas junto com suas mídias
+- ✍️ **Arrastar Texto**: Selecione e arraste texto para criar cards de nota
+- 🖱️ **Menu de Contexto**: Clique com botão direito em texto selecionado para salvar
 - 📋 **Clipboard**: Cole imagens da área de transferência
 - 🗂️ **Múltiplas Abas**: Organize suas mídias e notas em 3 abas personalizáveis
 - 🎬 **Viewers Flutuantes**: Visualize mídias em janelas redimensionáveis
@@ -42,11 +44,14 @@ npm run build
 - Clique no ícone da extensão na barra de ferramentas
 - Ou aproxime o mouse da borda direita da tela
 
-### Adicionar Mídias
+### Adicionar Conteúdo
 
-- **Arrastar**: Arraste qualquer imagem ou vídeo da página para a sidebar
+- **Arrastar Imagens**: Arraste qualquer imagem ou vídeo da página para a sidebar
+- **Arrastar Texto**: Selecione texto em qualquer página e arraste para a sidebar
+- **Menu de Contexto**: Selecione texto, clique com botão direito e escolha "Salvar texto no Pinex"
 - **Colar**: Copie uma imagem e clique no botão de colar na sidebar
-- **Suporta**: JPG, PNG, GIF, WebP, MP4, WebM e mais
+- **Upload**: Use o botão de upload para adicionar imagens do seu computador
+- **Suporta**: JPG, PNG, GIF, WebP, MP4, WebM e notas de texto
 
 ### Organizar
 

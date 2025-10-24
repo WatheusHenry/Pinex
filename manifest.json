@@ -3,7 +3,7 @@
   "name": "Sidebar Extension",
   "version": "1.0.0",
   "description": "Uma sidebar que pode ser escondida e exibida",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "contextMenus"],
   "icons": {
     "16": "logo.png",
     "32": "logo.png",

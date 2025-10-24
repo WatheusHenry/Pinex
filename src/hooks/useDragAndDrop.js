@@ -4,12 +4,24 @@ import { extractMediaFromDrop } from "../utils/mediaExtractor";
 export const useDragAndDrop = (onImagesAdded) => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedImageUrl, setDraggedImageUrl] = useState(null);
+  const [draggedText, setDraggedText] = useState(null);
 
   useEffect(() => {
     const handleGlobalDragStart = (e) => {
+      // Priorizar imagem sobre texto
       const imageUrl = findImageUrl(e.target);
       if (imageUrl) {
         setDraggedImageUrl(imageUrl);
+        setDraggedText(null);
+        return;
+      }
+
+      // Capturar texto selecionado apenas se não for imagem
+      const selectedText = window.getSelection().toString().trim();
+      if (selectedText) {
+        setDraggedText(selectedText);
+        e.dataTransfer.setData("text/plain", selectedText);
+        return;
       }
     };
 
@@ -37,13 +49,47 @@ export const useDragAndDrop = (onImagesAdded) => {
     e.stopPropagation();
     setIsDragging(false);
 
+    // Prioridade 1: Processar mídia (imagem/vídeo)
     const newImages = await extractMediaFromDrop(e, draggedImageUrl);
     
     if (newImages.length > 0) {
       onImagesAdded(newImages);
+      setDraggedImageUrl(null);
+      setDraggedText(null);
+      return;
+    }
+
+    // Prioridade 2: Verificar se há texto arrastado explicitamente
+    if (draggedText) {
+      const noteCard = {
+        id: Date.now() + Math.random(),
+        content: draggedText,
+        timestamp: Date.now(),
+        type: "note",
+      };
+      onImagesAdded([noteCard]);
+      setDraggedText(null);
+      return;
+    }
+
+    // Prioridade 3: Verificar se há texto no dataTransfer (apenas se não for URL de imagem)
+    const droppedText = e.dataTransfer.getData("text/plain");
+    if (droppedText && droppedText.trim()) {
+      // Ignorar se parecer uma URL de imagem
+      const isImageUrl = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/i.test(droppedText);
+      if (!isImageUrl) {
+        const noteCard = {
+          id: Date.now() + Math.random(),
+          content: droppedText.trim(),
+          timestamp: Date.now(),
+          type: "note",
+        };
+        onImagesAdded([noteCard]);
+      }
     }
 
     setDraggedImageUrl(null);
+    setDraggedText(null);
   };
 
   return {

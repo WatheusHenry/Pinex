@@ -50,6 +50,19 @@ const Sidebar = () => {
     const messageListener = (message) => {
       if (message.action === MESSAGES.TOGGLE_SIDEBAR) {
         setIsVisible((prev) => !prev);
+      } else if (message.action === "addTextNote" && message.text) {
+        // Adicionar nota de texto do menu de contexto
+        const noteCard = {
+          id: Date.now() + Math.random(),
+          content: message.text.trim(),
+          timestamp: Date.now(),
+          type: "note",
+        };
+        addImages([noteCard]);
+        // Abrir sidebar se estiver fechada
+        if (!isVisible) {
+          setIsVisible(true);
+        }
       }
     };
 
@@ -59,7 +72,7 @@ const Sidebar = () => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [isVisible, addImages]);
 
   const handleResizeStart = (e) => {
     e.preventDefault();
