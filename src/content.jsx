@@ -19,7 +19,7 @@ const Sidebar = () => {
   const [tabs, setTabs] = useState({
     tab1: { name: "🎨 Aba 1", images: [] },
     tab2: { name: "📸 Aba 2", images: [] },
-    tab3: { name: "🌟 Aba 3", images: [] }
+    tab3: { name: "🌟 Aba 3", images: [] },
   });
 
   useEffect(() => {
@@ -29,14 +29,14 @@ const Sidebar = () => {
         const loadedTabs = result.sidebarTabs || {
           tab1: { name: "🎨 Aba 1", images: [] },
           tab2: { name: "📸 Aba 2", images: [] },
-          tab3: { name: "🌟 Aba 3", images: [] }
+          tab3: { name: "🌟 Aba 3", images: [] },
         };
         const loadedCurrentTab = result.currentTab || "tab1";
-        
+
         setTabs(loadedTabs);
         setCurrentTab(loadedCurrentTab);
         setImages(loadedTabs[loadedCurrentTab]?.images || []);
-        
+
         console.log("Dados carregados - Aba atual:", loadedCurrentTab);
       });
     };
@@ -221,8 +221,6 @@ const Sidebar = () => {
     }
   }, [isVisible]);
 
-
-
   // Resize handlers
   const handleResizeStart = (e) => {
     e.preventDefault();
@@ -259,10 +257,10 @@ const Sidebar = () => {
       ...tabs,
       [currentTab]: {
         ...tabs[currentTab],
-        images: updatedImages
-      }
+        images: updatedImages,
+      },
     };
-    
+
     setImages(updatedImages);
     setTabs(updatedTabs);
     chrome.storage.local.set({ sidebarTabs: updatedTabs }, () => {
@@ -292,13 +290,13 @@ const Sidebar = () => {
     // Prioridade 1: Usar a URL capturada no dragstart
     if (draggedImageUrl) {
       const isVideo = draggedImageUrl.match(/\.(mp4|webm|mov|avi)(\?|$)/i);
-      
+
       // Aceitar qualquer URL capturada do dragstart (já foi validada como imagem/vídeo)
       newImages.push({
         id: Date.now() + Math.random(),
         url: draggedImageUrl,
         timestamp: Date.now(),
-        type: isVideo ? 'video' : 'image'
+        type: isVideo ? "video" : "image",
       });
       setDraggedImageUrl(null);
     }
@@ -327,14 +325,14 @@ const Sidebar = () => {
             url.startsWith("blob:"))
         ) {
           const isVideo = url.match(/\.(mp4|webm|mov|avi)(\?|$)/i);
-          
+
           // Se veio de um elemento img/video ou é data/blob, aceitar
           // Se tem extensão de vídeo, marcar como vídeo
           newImages.push({
             id: Date.now() + Math.random(),
             url: url,
             timestamp: Date.now(),
-            type: isVideo ? 'video' : 'image'
+            type: isVideo ? "video" : "image",
           });
         }
       }
@@ -355,7 +353,7 @@ const Sidebar = () => {
                   id: Date.now() + Math.random(),
                   url: event.target.result,
                   timestamp: Date.now(),
-                  type: item.type.startsWith("video/") ? 'video' : 'image'
+                  type: item.type.startsWith("video/") ? "video" : "image",
                 });
                 resolve();
               };
@@ -378,10 +376,10 @@ const Sidebar = () => {
       ...tabs,
       [currentTab]: {
         ...tabs[currentTab],
-        images: updatedImages
-      }
+        images: updatedImages,
+      },
     };
-    
+
     setImages(updatedImages);
     setTabs(updatedTabs);
     chrome.storage.local.set({ sidebarTabs: updatedTabs }, () => {
@@ -391,7 +389,7 @@ const Sidebar = () => {
 
   const switchTab = (tabId) => {
     if (tabId === currentTab) return;
-    
+
     console.log("Trocando para aba:", tabId);
     setCurrentTab(tabId);
     setImages(tabs[tabId]?.images || []);
@@ -427,14 +425,14 @@ const Sidebar = () => {
 
       // Detectar tipo de mídia
       const isVideo = text.match(/\.(mp4|webm|mov|avi)(\?|$)/i);
-      
+
       // Se tem extensão de mídia conhecida, adicionar
       if (isMediaUrl) {
         newImages.push({
           id: Date.now() + Math.random(),
           url: text,
           timestamp: Date.now(),
-          type: isVideo ? 'video' : 'image'
+          type: isVideo ? "video" : "image",
         });
       }
     }
@@ -453,7 +451,7 @@ const Sidebar = () => {
                   id: Date.now() + Math.random(),
                   url: event.target.result,
                   timestamp: Date.now(),
-                  type: item.type.startsWith("video/") ? 'video' : 'image'
+                  type: item.type.startsWith("video/") ? "video" : "image",
                 });
                 resolve();
               };
@@ -564,7 +562,7 @@ const Sidebar = () => {
         isDarkMode ? "dark" : "light"
       }`}
       style={{
-        transform: isVisible ? "translateX(0)" : `translateX(${width}px)`,
+        transform: isVisible ? "translateX(0)" : `translateX(${width + 10}px)`,
         width: `${width}px`,
       }}
     >
@@ -594,168 +592,13 @@ const Sidebar = () => {
           </svg>
         </button>
       ) : (
-        <div className={`sidebar-menu ${isClosing ? "closing" : ""}`}>
-          {Object.entries(tabs).map(([tabId, tab]) => (
-            <button
-              key={tabId}
-              className={`menu-item tab-menu-item ${currentTab === tabId ? "active" : ""}`}
-              onClick={() => switchTab(tabId)}
-              title={tab.name}
-            >
-              <span style={{ fontSize: '20px' }}>{tab.name.split(' ')[0]}</span>
-            </button>
-          ))}
-
-          <div className="menu-divider"></div>
-
-          <button
-            className="menu-item"
-            onClick={() => {
-              const updatedTabs = {
-                ...tabs,
-                [currentTab]: {
-                  ...tabs[currentTab],
-                  images: []
-                }
-              };
-              setImages([]);
-              setTabs(updatedTabs);
-              chrome.storage.local.set({ sidebarTabs: updatedTabs });
-            }}
-            title="Limpar imagens desta aba"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button
-            className="menu-item"
-            onClick={async () => {
-              const dataStr = JSON.stringify(tabs, null, 2);
-              const blob = new Blob([dataStr], { type: "application/json" });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `sidebar-tabs-${Date.now()}.json`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-            title="Exportar todas as abas"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button
-            className="menu-item"
-            onClick={() => {
-              const input = document.createElement("input");
-              input.type = "file";
-              input.accept = "application/json";
-              input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  const text = await file.text();
-                  try {
-                    const importedTabs = JSON.parse(text);
-                    if (typeof importedTabs === 'object') {
-                      setTabs(importedTabs);
-                      setImages(importedTabs[currentTab]?.images || []);
-                      chrome.storage.local.set({ sidebarTabs: importedTabs });
-                    }
-                  } catch (err) {
-                    console.error("Erro ao importar:", err);
-                  }
-                }
-              };
-              input.click();
-            }}
-            title="Importar abas"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button
-            className="menu-item"
-            onClick={() => {
-              setIsClosing(true);
-              setTimeout(() => {
-                setIsVisible(false);
-                setIsClosing(false);
-              }, 100);
-            }}
-            title="Fechar"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M18 6L6 18M6 6L18 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-      )}
-
-      <div className="sidebar-content" style={{ width: `${width}px` }}>
-        <div
-          className={`drop-zone ${isDragging ? "dragging" : ""}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onPaste={handlePaste}
-          tabIndex={0}
-        >
+        <>
           {hasClipboardContent && (
-            <button className="quick-paste-btn" onClick={handleQuickPaste}>
+            <button
+              className="quick-paste-floating-btn"
+              onClick={handleQuickPaste}
+              title="Colar da área de transferência"
+            >
               <svg
                 width="20"
                 height="20"
@@ -783,10 +626,100 @@ const Sidebar = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>Colar da área de transferência</span>
             </button>
           )}
 
+          <div className={`sidebar-menu ${isClosing ? "closing" : ""}`}>
+            {Object.entries(tabs).map(([tabId, tab]) => (
+              <button
+                key={tabId}
+                className={`menu-item tab-menu-item ${
+                  currentTab === tabId ? "active" : ""
+                }`}
+                onClick={() => switchTab(tabId)}
+                title={tab.name}
+              >
+                <span style={{ fontSize: "20px" }}>
+                  {tab.name.split(" ")[0]}
+                </span>
+              </button>
+            ))}
+
+            <div className="menu-divider"></div>
+
+            <button
+              className="menu-item"
+              onClick={() => {
+                const updatedTabs = {
+                  ...tabs,
+                  [currentTab]: {
+                    ...tabs[currentTab],
+                    images: [],
+                  },
+                };
+                setImages([]);
+                setTabs(updatedTabs);
+                chrome.storage.local.set({ sidebarTabs: updatedTabs });
+              }}
+              title="Limpar imagens desta aba"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            <button
+              className="menu-item"
+              onClick={() => {
+                setIsClosing(true);
+                setTimeout(() => {
+                  setIsVisible(false);
+                  setIsClosing(false);
+                }, 100);
+              }}
+              title="Fechar"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </>
+      )}
+
+      <div className="sidebar-content" style={{ width: `${width}px` }}>
+        <div
+          className={`drop-zone ${isDragging ? "dragging" : ""}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onPaste={handlePaste}
+          tabIndex={0}
+        >
           {images.length === 0 ? (
             <div className="empty-state">
               <svg
@@ -828,17 +761,18 @@ const Sidebar = () => {
             <div className="image-grid">
               {images.map((image) => (
                 <div key={image.id} className="image-item">
-                  {image.type === 'video' ? (
+                  {image.type === "video" ? (
                     <video
                       src={image.url}
                       onClick={() =>
-                        isVisible && window.createFloatingViewer(image.url, image.type)
+                        isVisible &&
+                        window.createFloatingViewer(image.url, image.type)
                       }
-                      style={{ 
+                      style={{
                         cursor: isVisible ? "pointer" : "default",
                         width: "100%",
                         height: "auto",
-                        display: "block"
+                        display: "block",
                       }}
                       muted
                       loop
@@ -849,7 +783,8 @@ const Sidebar = () => {
                       src={image.url}
                       alt="Saved"
                       onClick={() =>
-                        isVisible && window.createFloatingViewer(image.url, image.type)
+                        isVisible &&
+                        window.createFloatingViewer(image.url, image.type)
                       }
                       style={{ cursor: isVisible ? "pointer" : "default" }}
                     />
@@ -939,7 +874,7 @@ const Sidebar = () => {
 const viewers = new Map();
 let viewerCounter = 0;
 
-function createFloatingViewer(mediaUrl, mediaType = 'image') {
+function createFloatingViewer(mediaUrl, mediaType = "image") {
   const viewerId = `viewer-${Date.now()}-${viewerCounter++}`;
 
   const createViewer = (width, height) => {
@@ -952,8 +887,8 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
       position: fixed;
       width: ${width}px;
       height: ${height}px;
-      top: ${100 + (viewerCounter * 30)}px;
-      left: ${100 + (viewerCounter * 30)}px;
+      top: ${100 + viewerCounter * 30}px;
+      left: ${100 + viewerCounter * 30}px;
       background: rgba(20, 20, 20, 0.95);
       backdrop-filter: blur(10px);
       border-radius: 8px;
@@ -970,7 +905,7 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
 
     // Mídia (imagem ou vídeo)
     let mediaElement;
-    if (mediaType === 'video') {
+    if (mediaType === "video") {
       mediaElement = document.createElement("video");
       mediaElement.src = mediaUrl;
       mediaElement.controls = true;
@@ -989,8 +924,8 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
     let isMinimized = false;
     let savedWidth = width;
     let savedHeight = height;
-    let savedLeft = 100 + (viewerCounter * 30);
-    let savedTop = 100 + (viewerCounter * 30);
+    let savedLeft = 100 + viewerCounter * 30;
+    let savedTop = 100 + viewerCounter * 30;
 
     // Botões flutuantes
     const actions = document.createElement("div");
@@ -1007,14 +942,14 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
       (minimizeBtn.style.background = "rgba(0,0,0,0.7)");
     minimizeBtn.onclick = (e) => {
       e.stopPropagation();
-      
+
       if (!isMinimized) {
         // Salvar estado atual
         savedWidth = parseInt(container.style.width);
         savedHeight = parseInt(container.style.height);
         savedLeft = parseInt(container.style.left);
         savedTop = parseInt(container.style.top);
-        
+
         // Minimizar
         container.style.width = "120px";
         container.style.height = "120px";
@@ -1023,12 +958,12 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
         container.style.top = "auto";
         container.style.left = "auto";
         container.style.cursor = "pointer";
-        
+
         // Esconder resize handles
-        Object.values(resizeHandleElements).forEach(handle => {
+        Object.values(resizeHandleElements).forEach((handle) => {
           handle.style.display = "none";
         });
-        
+
         minimizeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         isMinimized = true;
       } else {
@@ -1040,12 +975,12 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
         container.style.bottom = "auto";
         container.style.right = "auto";
         container.style.cursor = "move";
-        
+
         // Mostrar resize handles
-        Object.values(resizeHandleElements).forEach(handle => {
+        Object.values(resizeHandleElements).forEach((handle) => {
           handle.style.display = "block";
         });
-        
+
         minimizeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         isMinimized = false;
       }
@@ -1055,8 +990,10 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
     closeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     closeBtn.style.cssText =
       "width: 36px; height: 36px; border: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;";
-    closeBtn.onmouseenter = () => (closeBtn.style.background = "rgba(0,0,0,0.9)");
-    closeBtn.onmouseleave = () => (closeBtn.style.background = "rgba(0,0,0,0.7)");
+    closeBtn.onmouseenter = () =>
+      (closeBtn.style.background = "rgba(0,0,0,0.9)");
+    closeBtn.onmouseleave = () =>
+      (closeBtn.style.background = "rgba(0,0,0,0.7)");
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       container.remove();
@@ -1067,68 +1004,106 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
     actions.appendChild(closeBtn);
     container.appendChild(actions);
 
-  // Mostrar botões ao passar o mouse
-  container.onmouseenter = () => (actions.style.opacity = "1");
-  container.onmouseleave = () => (actions.style.opacity = "0");
+    // Mostrar botões ao passar o mouse
+    container.onmouseenter = () => (actions.style.opacity = "1");
+    container.onmouseleave = () => (actions.style.opacity = "0");
 
-  // Resize handles (8 direções)
-  const resizeHandles = {
-    se: { cursor: 'nwse-resize', position: 'bottom: 0; right: 0;' },
-    sw: { cursor: 'nesw-resize', position: 'bottom: 0; left: 0;' },
-    ne: { cursor: 'nesw-resize', position: 'top: 0; right: 0;' },
-    nw: { cursor: 'nwse-resize', position: 'top: 0; left: 0;' },
-    n: { cursor: 'ns-resize', position: 'top: 0; left: 50%; transform: translateX(-50%);' },
-    s: { cursor: 'ns-resize', position: 'bottom: 0; left: 50%; transform: translateX(-50%);' },
-    e: { cursor: 'ew-resize', position: 'right: 0; top: 50%; transform: translateY(-50%);' },
-    w: { cursor: 'ew-resize', position: 'left: 0; top: 50%; transform: translateY(-50%);' }
-  };
+    // Resize handles (8 direções)
+    const resizeHandles = {
+      se: { cursor: "nwse-resize", position: "bottom: 0; right: 0;" },
+      sw: { cursor: "nesw-resize", position: "bottom: 0; left: 0;" },
+      ne: { cursor: "nesw-resize", position: "top: 0; right: 0;" },
+      nw: { cursor: "nwse-resize", position: "top: 0; left: 0;" },
+      n: {
+        cursor: "ns-resize",
+        position: "top: 0; left: 50%; transform: translateX(-50%);",
+      },
+      s: {
+        cursor: "ns-resize",
+        position: "bottom: 0; left: 50%; transform: translateX(-50%);",
+      },
+      e: {
+        cursor: "ew-resize",
+        position: "right: 0; top: 50%; transform: translateY(-50%);",
+      },
+      w: {
+        cursor: "ew-resize",
+        position: "left: 0; top: 50%; transform: translateY(-50%);",
+      },
+    };
 
-  const resizeHandleElements = {};
-  
-  Object.entries(resizeHandles).forEach(([direction, config]) => {
-    const handle = document.createElement("div");
-    handle.className = `resize-handle-${direction}`;
-    const size = ['n', 's', 'e', 'w'].includes(direction) ? '100%' : '20px';
-    const width = ['n', 's'].includes(direction) ? '100%' : (['e', 'w'].includes(direction) ? '8px' : size);
-    const height = ['e', 'w'].includes(direction) ? '100%' : (['n', 's'].includes(direction) ? '8px' : size);
-    
-    handle.style.cssText = `
+    const resizeHandleElements = {};
+
+    Object.entries(resizeHandles).forEach(([direction, config]) => {
+      const handle = document.createElement("div");
+      handle.className = `resize-handle-${direction}`;
+      const size = ["n", "s", "e", "w"].includes(direction) ? "100%" : "20px";
+      const width = ["n", "s"].includes(direction)
+        ? "100%"
+        : ["e", "w"].includes(direction)
+        ? "8px"
+        : size;
+      const height = ["e", "w"].includes(direction)
+        ? "100%"
+        : ["n", "s"].includes(direction)
+        ? "8px"
+        : size;
+
+      handle.style.cssText = `
       position: absolute;
       ${config.position}
       width: ${width};
       height: ${height};
       cursor: ${config.cursor};
-      background: ${['n', 's', 'e', 'w'].includes(direction) ? 'transparent' : 'rgba(255,255,255,0.2)'};
-      border-radius: ${direction === 'se' ? '0 0 8px 0' : direction === 'sw' ? '0 0 0 8px' : direction === 'ne' ? '0 8px 0 0' : direction === 'nw' ? '8px 0 0 0' : '0'};
+      background: ${
+        ["n", "s", "e", "w"].includes(direction)
+          ? "transparent"
+          : "rgba(255,255,255,0.2)"
+      };
+      border-radius: ${
+        direction === "se"
+          ? "0 0 8px 0"
+          : direction === "sw"
+          ? "0 0 0 8px"
+          : direction === "ne"
+          ? "0 8px 0 0"
+          : direction === "nw"
+          ? "8px 0 0 0"
+          : "0"
+      };
       opacity: 0;
       transition: opacity 0.2s;
       z-index: 10;
     `;
-    container.appendChild(handle);
-    resizeHandleElements[direction] = handle;
-  });
+      container.appendChild(handle);
+      resizeHandleElements[direction] = handle;
+    });
 
-  // Mostrar resize handles ao passar o mouse
-  container.onmouseenter = () => {
-    actions.style.opacity = "1";
-    Object.values(resizeHandleElements).forEach(handle => handle.style.opacity = "1");
-  };
-  container.onmouseleave = () => {
-    actions.style.opacity = "0";
-    Object.values(resizeHandleElements).forEach(handle => handle.style.opacity = "0");
-  };
+    // Mostrar resize handles ao passar o mouse
+    container.onmouseenter = () => {
+      actions.style.opacity = "1";
+      Object.values(resizeHandleElements).forEach(
+        (handle) => (handle.style.opacity = "1")
+      );
+    };
+    container.onmouseleave = () => {
+      actions.style.opacity = "0";
+      Object.values(resizeHandleElements).forEach(
+        (handle) => (handle.style.opacity = "0")
+      );
+    };
 
-  document.body.appendChild(container);
+    document.body.appendChild(container);
 
-  // Drag functionality
-  let isDragging = false;
-  let startX, startY, startLeft, startTop;
+    // Drag functionality
+    let isDragging = false;
+    let startX, startY, startLeft, startTop;
 
     container.addEventListener("mousedown", (e) => {
       // Não arrastar se clicar nos botões ou resize handles
       if (
         e.target.tagName === "BUTTON" ||
-        e.target.className.startsWith('resize-handle-') ||
+        e.target.className.startsWith("resize-handle-") ||
         e.target.closest("button")
       ) {
         return;
@@ -1178,24 +1153,24 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
       if (isResizing && resizeDirection && !isMinimized) {
         const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
-        
+
         let newWidth = startWidth;
         let newHeight = startHeight;
         let newLeft = startLeft;
         let newTop = startTop;
 
         // Calcular novas dimensões baseado na direção
-        if (resizeDirection.includes('e')) {
+        if (resizeDirection.includes("e")) {
           newWidth = Math.max(200, startWidth + deltaX);
         }
-        if (resizeDirection.includes('w')) {
+        if (resizeDirection.includes("w")) {
           newWidth = Math.max(200, startWidth - deltaX);
           if (newWidth > 200) newLeft = startLeft + deltaX;
         }
-        if (resizeDirection.includes('s')) {
+        if (resizeDirection.includes("s")) {
           newHeight = Math.max(150, startHeight + deltaY);
         }
-        if (resizeDirection.includes('n')) {
+        if (resizeDirection.includes("n")) {
           newHeight = Math.max(150, startHeight - deltaY);
           if (newHeight > 150) newTop = startTop + deltaY;
         }
@@ -1216,24 +1191,24 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
   };
 
   // Obter dimensões baseado no tipo de mídia
-  if (mediaType === 'video') {
-    const tempVideo = document.createElement('video');
+  if (mediaType === "video") {
+    const tempVideo = document.createElement("video");
     tempVideo.src = mediaUrl;
     tempVideo.onloadedmetadata = () => {
       const maxWidth = window.innerWidth * 0.8;
       const maxHeight = window.innerHeight * 0.8;
       let width = tempVideo.videoWidth || 640;
       let height = tempVideo.videoHeight || 480;
-      
+
       if (width > maxWidth || height > maxHeight) {
         const ratio = Math.min(maxWidth / width, maxHeight / height);
         width = width * ratio;
         height = height * ratio;
       }
-      
+
       width = Math.max(400, width);
       height = Math.max(300, height);
-      
+
       createViewer(width, height);
     };
     tempVideo.onerror = () => {
@@ -1247,23 +1222,23 @@ function createFloatingViewer(mediaUrl, mediaType = 'image') {
       const maxHeight = window.innerHeight * 0.8;
       let width = tempImg.naturalWidth;
       let height = tempImg.naturalHeight;
-      
+
       if (width > maxWidth || height > maxHeight) {
         const ratio = Math.min(maxWidth / width, maxHeight / height);
         width = width * ratio;
         height = height * ratio;
       }
-      
+
       width = Math.max(200, width);
       height = Math.max(150, height);
-      
+
       createViewer(width, height);
     };
     tempImg.onerror = () => {
       createViewer(400, 300);
     };
   }
-  
+
   return viewerId;
 }
 

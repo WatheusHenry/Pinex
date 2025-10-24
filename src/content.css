@@ -444,30 +444,7 @@
   transform: scale(1.1);
 }
 
-/* Botão de colagem rápida */
-.quick-paste-btn {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: rgba(66, 133, 244, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  transition: all 0.2s ease;
-  animation: slideDown 0.3s ease;
-}
+
 
 @keyframes slideDown {
   from {
@@ -480,19 +457,7 @@
   }
 }
 
-.quick-paste-btn:hover {
-  background: rgba(51, 103, 214, 0.95);
-  transform: translateX(-50%) scale(1.05);
-  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4), 0 3px 10px rgba(0, 0, 0, 0.15);
-}
 
-.quick-paste-btn:active {
-  transform: translateX(-50%) scale(0.95);
-}
-
-.quick-paste-btn svg {
-  flex-shrink: 0;
-}
 
 /* Menu vertical */
 .sidebar-menu {
@@ -584,4 +549,67 @@
 
 .sidebar-container.left .sidebar-menu {
   right: -56px;
+}
+
+
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    background: rgba(66, 133, 244, 0.3) !important;
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4);
+  }
+  50% {
+    background: rgba(66, 133, 244, 0.4) !important;
+    box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+  }
+}
+
+/* Botão de colagem rápida flutuante */
+.quick-paste-floating-btn {
+  position: absolute;
+  left: -55px;
+  bottom: calc(65% + 4px);
+  width: 37px;
+  height: 36px;
+  background: rgba(66, 133, 244, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 32px rgba(66, 133, 244, 0.5),
+      0 4px 16px rgba(66, 133, 244, 0.3),
+      inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  }
+}
+
+.quick-paste-floating-btn:hover {
+  background: rgba(51, 103, 214, 0.95);
+  transform: scale(1.1);
+  animation: none;
+  box-shadow: 0 12px 40px rgba(66, 133, 244, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.quick-paste-floating-btn:active {
+  transform: scale(0.95);
 }
