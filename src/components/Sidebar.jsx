@@ -86,6 +86,74 @@ const Sidebar = () => {
     }, 100);
   };
 
+  const handleNewNote = () => {
+    if (window.createNoteViewer) {
+      window.createNoteViewer(null, handleSaveNote);
+    }
+  };
+
+  const handleEditNote = (note) => {
+    if (window.createNoteViewer) {
+      window.createNoteViewer(note, handleSaveNote);
+    }
+  };
+
+  const handleUploadImage = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
+    input.style.display = "none";
+
+    input.onchange = async (e) => {
+      const files = Array.from(e.target.files);
+      const imagePromises = files.map((file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            resolve({
+              id: Date.now() + Math.random(),
+              url: event.target.result,
+              timestamp: Date.now(),
+              type: "image",
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const newImages = await Promise.all(imagePromises);
+      addImages(newImages);
+      input.remove();
+    };
+
+    document.body.appendChild(input);
+    input.click();
+  };
+
+  const handleSaveNote = (note) => {
+    // Verificar se é edição ou nova nota
+    const existingNote = images.find((img) => img.id === note.id);
+    
+    if (existingNote) {
+      // Atualizar nota existente
+      const updatedImages = images.map((img) =>
+        img.id === note.id ? note : img
+      );
+      const updatedTabs = {
+        ...tabs,
+        [currentTab]: {
+          ...tabs[currentTab],
+          images: updatedImages,
+        },
+      };
+      chrome.storage.local.set({ sidebarTabs: updatedTabs });
+    } else {
+      // Adicionar nova nota
+      addImages([note]);
+    }
+  };
+
   return (
     <div
       className={`sidebar-container ${isVisible ? "visible" : ""} ${isDarkMode ? "dark" : "light"}`}
@@ -105,6 +173,8 @@ const Sidebar = () => {
           <ActionMenu
             hasClipboardContent={hasClipboardContent}
             onQuickPaste={handleQuickPaste}
+            onNewNote={handleNewNote}
+            onUploadImage={handleUploadImage}
             onClear={clearCurrentTab}
             onClose={handleClose}
           />
@@ -120,6 +190,7 @@ const Sidebar = () => {
           onDrop={handleDrop}
           onPaste={handlePaste}
           onDeleteImage={deleteImage}
+          onEditNote={handleEditNote}
           isVisible={isVisible}
         />
       </div>

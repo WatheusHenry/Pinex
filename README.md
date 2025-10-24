@@ -1,16 +1,19 @@
-# Pinex 
+# Pinex
 
 Extensão moderna do Chrome construída com React + Vite que adiciona uma sidebar lateral inteligente para salvar e organizar imagens e vídeos de qualquer página web.
 
 ## ✨ Funcionalidades
 
 - 📸 **Drag & Drop**: Arraste imagens diretamente da página
+- 📝 **Notas de Texto**: Crie e edite notas junto com suas mídias
 - 📋 **Clipboard**: Cole imagens da área de transferência
-- 🗂️ **Múltiplas Abas**: Organize suas mídias em 3 abas personalizáveis
+- 🗂️ **Múltiplas Abas**: Organize suas mídias e notas em 3 abas personalizáveis
 - 🎬 **Viewers Flutuantes**: Visualize mídias em janelas redimensionáveis
 - 🌓 **Modo Escuro**: Detecta automaticamente o tema do site
-- 💾 **Persistência**: Suas mídias são salvas automaticamente
+- 💾 **Persistência**: Suas mídias e notas são salvas automaticamente
 - 🔄 **Sincronização**: Dados sincronizados entre todas as abas do navegador
+- 💾 **Auto-Save**: Notas salvam automaticamente ao fechar
+- ⌨️ **Atalhos**: Ctrl+Enter para salvar, Esc para fechar
 
 ## 🚀 Instalação
 

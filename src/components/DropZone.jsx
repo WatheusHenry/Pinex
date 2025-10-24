@@ -10,6 +10,7 @@ const DropZone = ({
   onDrop,
   onPaste,
   onDeleteImage,
+  onEditNote,
   isVisible,
 }) => {
   return (
@@ -24,7 +25,12 @@ const DropZone = ({
       {images.length === 0 ? (
         <EmptyState />
       ) : (
-        <ImageGrid images={images} onDeleteImage={onDeleteImage} isVisible={isVisible} />
+        <ImageGrid 
+          images={images} 
+          onDeleteImage={onDeleteImage} 
+          onEditNote={onEditNote}
+          isVisible={isVisible} 
+        />
       )}
     </div>
   );
