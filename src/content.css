@@ -60,7 +60,7 @@
   color: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  cursor: pointer;
+  cursor: grab;
   font-size: 20px;
   display: flex;
   align-items: center;
@@ -70,6 +70,7 @@
   pointer-events: none;
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   animation: buttonFadeOut 0.3s ease forwards;
+  user-select: none;
 }
 
 @keyframes buttonFadeIn {
@@ -109,6 +110,13 @@
 
 .sidebar-toggle:active {
   transform: translateY(-50%) scale(0.95);
+}
+
+.sidebar-toggle.dragging {
+  cursor: grabbing;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition: none;
 }
 
 .sidebar-content {
