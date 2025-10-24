@@ -17,13 +17,16 @@ export function createNoteViewer(note = null, onSave, onClose) {
     background: rgba(26, 26, 26, 0.98);
     backdrop-filter: blur(10px);
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     z-index: 999999;
     display: flex;
     flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow: hidden;
     cursor: move;
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   `;
 
   // Sempre usar modo escuro
@@ -88,9 +91,13 @@ export function createNoteViewer(note = null, onSave, onClose) {
       };
       if (onSave) onSave(noteData);
     }
-    container.remove();
-    noteViewers.delete(viewerId);
-    if (onClose) onClose();
+    container.style.opacity = '0';
+    container.style.transform = 'scale(0.95) translateY(10px)';
+    setTimeout(() => {
+      container.remove();
+      noteViewers.delete(viewerId);
+      if (onClose) onClose();
+    }, 200);
   };
 
   closeBtn.onclick = handleClose;
@@ -145,8 +152,12 @@ export function createNoteViewer(note = null, onSave, onClose) {
         type: "note",
       };
       if (onSave) onSave(noteData);
-      container.remove();
-      noteViewers.delete(viewerId);
+      container.style.opacity = '0';
+      container.style.transform = 'scale(0.95) translateY(10px)';
+      setTimeout(() => {
+        container.remove();
+        noteViewers.delete(viewerId);
+      }, 200);
     }
   };
 
@@ -199,6 +210,14 @@ export function createNoteViewer(note = null, onSave, onClose) {
 
   // Add to DOM
   document.body.appendChild(container);
+  
+  // Trigger animation after DOM insertion
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      container.style.opacity = '1';
+      container.style.transform = 'scale(1) translateY(0)';
+    });
+  });
 
   // Focus on content
   setTimeout(() => contentTextarea.focus(), 100);

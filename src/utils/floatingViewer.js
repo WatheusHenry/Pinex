@@ -20,7 +20,7 @@ export function createFloatingViewer(mediaUrl, mediaType = "image") {
       background: rgba(20, 20, 20, 0.95);
       backdrop-filter: blur(10px);
       border-radius: 8px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       z-index: 999998;
       display: flex;
       align-items: center;
@@ -29,6 +29,9 @@ export function createFloatingViewer(mediaUrl, mediaType = "image") {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       overflow: hidden;
       cursor: move;
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     `;
 
     let mediaElement;
@@ -50,6 +53,7 @@ export function createFloatingViewer(mediaUrl, mediaType = "image") {
     let savedHeight = height;
     let savedLeft = 100 + viewerCounter * 30;
     let savedTop = 100 + viewerCounter * 30;
+    const aspectRatio = width / height;
 
     const actions = document.createElement("div");
     actions.style.cssText = "position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s; z-index: 20;";
@@ -101,8 +105,12 @@ export function createFloatingViewer(mediaUrl, mediaType = "image") {
       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
       (e) => {
         e.stopPropagation();
-        container.remove();
-        viewers.delete(viewerId);
+        container.style.opacity = '0';
+        container.style.transform = 'scale(0.95) translateY(10px)';
+        setTimeout(() => {
+          container.remove();
+          viewers.delete(viewerId);
+        }, 200);
       }
     );
 
@@ -124,9 +132,17 @@ export function createFloatingViewer(mediaUrl, mediaType = "image") {
     };
 
     document.body.appendChild(container);
+    
+    // Trigger animation after DOM insertion
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        container.style.opacity = '1';
+        container.style.transform = 'scale(1) translateY(0)';
+      });
+    });
 
     setupDragFunctionality(container, isMinimized);
-    setupResizeFunctionality(container, resizeHandleElements, isMinimized);
+    setupResizeFunctionality(container, resizeHandleElements, isMinimized, aspectRatio);
 
     viewers.set(viewerId, container);
   };
@@ -233,7 +249,7 @@ function setupDragFunctionality(container, isMinimized) {
   });
 }
 
-function setupResizeFunctionality(container, resizeHandleElements, isMinimized) {
+function setupResizeFunctionality(container, resizeHandleElements, isMinimized, aspectRatio) {
   let isResizing = false;
   let resizeDirection = null;
   let startX, startY, startWidth, startHeight, startLeft, startTop;
@@ -263,19 +279,51 @@ function setupResizeFunctionality(container, resizeHandleElements, isMinimized) 
       let newLeft = startLeft;
       let newTop = startTop;
 
-      if (resizeDirection.includes("e")) {
-        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth + deltaX);
-      }
-      if (resizeDirection.includes("w")) {
-        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth - deltaX);
-        if (newWidth > VIEWER_CONFIG.MIN_WIDTH) newLeft = startLeft + deltaX;
-      }
-      if (resizeDirection.includes("s")) {
-        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, startHeight + deltaY);
-      }
-      if (resizeDirection.includes("n")) {
-        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, startHeight - deltaY);
-        if (newHeight > VIEWER_CONFIG.MIN_HEIGHT) newTop = startTop + deltaY;
+      // Para cantos, manter proporção baseado no maior delta
+      if (resizeDirection.includes("e") && resizeDirection.includes("s")) {
+        // Canto sudeste
+        const delta = Math.max(Math.abs(deltaX), Math.abs(deltaY / aspectRatio));
+        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth + delta);
+        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, newWidth / aspectRatio);
+      } else if (resizeDirection.includes("e") && resizeDirection.includes("n")) {
+        // Canto nordeste
+        const delta = Math.max(Math.abs(deltaX), Math.abs(deltaY / aspectRatio));
+        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth + delta);
+        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, newWidth / aspectRatio);
+        newTop = startTop + startHeight - newHeight;
+      } else if (resizeDirection.includes("w") && resizeDirection.includes("s")) {
+        // Canto sudoeste
+        const delta = Math.max(Math.abs(deltaX), Math.abs(deltaY / aspectRatio));
+        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth - delta);
+        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, newWidth / aspectRatio);
+        newLeft = startLeft + startWidth - newWidth;
+      } else if (resizeDirection.includes("w") && resizeDirection.includes("n")) {
+        // Canto noroeste
+        const delta = Math.max(Math.abs(deltaX), Math.abs(deltaY / aspectRatio));
+        newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth - delta);
+        newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, newWidth / aspectRatio);
+        newLeft = startLeft + startWidth - newWidth;
+        newTop = startTop + startHeight - newHeight;
+      } else {
+        // Bordas individuais - manter proporção
+        if (resizeDirection.includes("e")) {
+          newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth + deltaX);
+          newHeight = newWidth / aspectRatio;
+        }
+        if (resizeDirection.includes("w")) {
+          newWidth = Math.max(VIEWER_CONFIG.MIN_WIDTH, startWidth - deltaX);
+          newHeight = newWidth / aspectRatio;
+          newLeft = startLeft + startWidth - newWidth;
+        }
+        if (resizeDirection.includes("s")) {
+          newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, startHeight + deltaY);
+          newWidth = newHeight * aspectRatio;
+        }
+        if (resizeDirection.includes("n")) {
+          newHeight = Math.max(VIEWER_CONFIG.MIN_HEIGHT, startHeight - deltaY);
+          newWidth = newHeight * aspectRatio;
+          newTop = startTop + startHeight - newHeight;
+        }
       }
 
       container.style.width = `${newWidth}px`;

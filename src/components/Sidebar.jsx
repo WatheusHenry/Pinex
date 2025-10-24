@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
 import ActionMenu from "./ActionMenu";
 import DropZone from "./DropZone";
@@ -16,11 +17,22 @@ const Sidebar = () => {
   const [width, setWidth] = useState(SIDEBAR_CONFIG.DEFAULT_WIDTH);
   const [isResizing, setIsResizing] = useState(false);
   const [showButton, setShowButton] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
 
-  const { tabs, currentTab, images, switchTab, addImages, deleteImage, clearCurrentTab } = useSidebarState();
-  const { isDragging, handleDragOver, handleDragLeave, handleDrop } = useDragAndDrop(addImages);
-  const { hasClipboardContent, handlePaste, handleQuickPaste } = useClipboard(addImages, isVisible);
+  const {
+    tabs,
+    currentTab,
+    images,
+    switchTab,
+    addImages,
+    deleteImage,
+    clearCurrentTab,
+  } = useSidebarState();
+  const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
+    useDragAndDrop(addImages);
+  const { hasClipboardContent, handlePaste, handleQuickPaste } = useClipboard(
+    addImages,
+    isVisible
+  );
   const isDarkMode = useDarkMode();
 
   useEffect(() => {
@@ -59,7 +71,10 @@ const Sidebar = () => {
 
     const handleMouseMove = (e) => {
       const newWidth = window.innerWidth - e.clientX;
-      if (newWidth >= SIDEBAR_CONFIG.MIN_WIDTH && newWidth <= SIDEBAR_CONFIG.MAX_WIDTH) {
+      if (
+        newWidth >= SIDEBAR_CONFIG.MIN_WIDTH &&
+        newWidth <= SIDEBAR_CONFIG.MAX_WIDTH
+      ) {
         setWidth(newWidth);
       }
     };
@@ -79,11 +94,7 @@ const Sidebar = () => {
   }, [isResizing, width]);
 
   const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      setIsClosing(false);
-    }, 100);
+    setIsVisible(false);
   };
 
   const handleNewNote = () => {
@@ -134,7 +145,7 @@ const Sidebar = () => {
   const handleSaveNote = (note) => {
     // Verificar se é edição ou nova nota
     const existingNote = images.find((img) => img.id === note.id);
-    
+
     if (existingNote) {
       // Atualizar nota existente
       const updatedImages = images.map((img) =>
@@ -155,31 +166,62 @@ const Sidebar = () => {
   };
 
   return (
-    <div
-      className={`sidebar-container ${isVisible ? "visible" : ""} ${isDarkMode ? "dark" : "light"}`}
+    <motion.div
+      className={`sidebar-container ${isVisible ? "visible" : ""} ${
+        isDarkMode ? "dark" : "light"
+      }`}
+      initial={false}
+      animate={{
+        x: isVisible ? 0 : width + 10,
+      }}
+      transition={{
+        type: "spring",
+        damping: 30,
+        stiffness: 500,
+        mass: 0.5,
+      }}
       style={{
-        transform: isVisible ? "translateX(0)" : `translateX(${width + 10}px)`,
         width: `${width}px`,
       }}
     >
       {isVisible && <ResizeHandle onMouseDown={handleResizeStart} />}
 
-      {!isVisible ? (
-        <ToggleButton show={showButton} onClick={() => setIsVisible(true)} />
-      ) : (
-        <div className={`sidebar-menu ${isClosing ? "closing" : ""}`}>
-          <TabMenu tabs={tabs} currentTab={currentTab} onTabSwitch={switchTab} />
-          <div className="menu-divider" />
-          <ActionMenu
-            hasClipboardContent={hasClipboardContent}
-            onQuickPaste={handleQuickPaste}
-            onNewNote={handleNewNote}
-            onUploadImage={handleUploadImage}
-            onClear={clearCurrentTab}
-            onClose={handleClose}
-          />
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {!isVisible ? (
+          <ToggleButton show={showButton} onClick={() => setIsVisible(true)} />
+        ) : (
+          <motion.div
+            key="menu"
+            className="sidebar-menu"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{
+              duration: 0.15,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+            style={{
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+          >
+            <TabMenu
+              tabs={tabs}
+              currentTab={currentTab}
+              onTabSwitch={switchTab}
+            />
+            <div className="menu-divider" />
+            <ActionMenu
+              hasClipboardContent={hasClipboardContent}
+              onQuickPaste={handleQuickPaste}
+              onNewNote={handleNewNote}
+              onUploadImage={handleUploadImage}
+              onClear={clearCurrentTab}
+              onClose={handleClose}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="sidebar-content" style={{ width: `${width}px` }}>
         <DropZone
@@ -194,7 +236,7 @@ const Sidebar = () => {
           isVisible={isVisible}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

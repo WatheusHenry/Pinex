@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const ActionMenu = ({
   hasClipboardContent,
   onQuickPaste,
@@ -6,9 +8,24 @@ const ActionMenu = ({
   onClear,
   onClose,
 }) => {
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: { scale: 1.1 },
+    tap: { scale: 0.95 },
+  };
+
   return (
     <>
-      <button className="menu-item" onClick={onNewNote} title="Nova nota">
+      <motion.button
+        className="menu-item"
+        onClick={onNewNote}
+        title="Nova nota"
+        variants={buttonVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        transition={{ type: "spring", damping: 20, stiffness: 400 }}
+      >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
             d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
@@ -18,9 +35,9 @@ const ActionMenu = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </motion.button>
 
-      <button
+      <motion.button
         className={`menu-item quick-paste-menu-item ${
           !hasClipboardContent ? "disabled" : ""
         }`}
@@ -31,6 +48,11 @@ const ActionMenu = ({
             : "Nada para colar"
         }
         disabled={!hasClipboardContent}
+        variants={buttonVariants}
+        initial="initial"
+        whileHover={hasClipboardContent ? "hover" : "initial"}
+        whileTap={hasClipboardContent ? "tap" : "initial"}
+        transition={{ type: "spring", damping: 20, stiffness: 400 }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
@@ -53,12 +75,17 @@ const ActionMenu = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </motion.button>
 
-      <button
+      <motion.button
         className="menu-item"
         onClick={onUploadImage}
         title="Carregar imagem do dispositivo"
+        variants={buttonVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        transition={{ type: "spring", damping: 20, stiffness: 400 }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
@@ -69,12 +96,17 @@ const ActionMenu = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </motion.button>
 
-      <button
+      <motion.button
         className="menu-item"
         onClick={onClear}
         title="Limpar imagens desta aba"
+        variants={buttonVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        transition={{ type: "spring", damping: 20, stiffness: 400 }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
@@ -85,9 +117,18 @@ const ActionMenu = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </motion.button>
 
-      <button className="menu-item" onClick={onClose} title="Fechar">
+      <motion.button
+        className="menu-item"
+        onClick={onClose}
+        title="Fechar"
+        variants={buttonVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        transition={{ type: "spring", damping: 20, stiffness: 400 }}
+      >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
             d="M18 6L6 18M6 6L18 18"
@@ -97,7 +138,7 @@ const ActionMenu = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </motion.button>
     </>
   );
 };

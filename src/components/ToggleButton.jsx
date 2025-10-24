@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ToggleButton = ({ show, onClick }) => {
   const [position, setPosition] = useState(50);
@@ -57,22 +58,36 @@ const ToggleButton = ({ show, onClick }) => {
   }, [isDragging, position, onClick]);
 
   return (
-    <button
-      ref={buttonRef}
-      className={`sidebar-toggle ${show ? "show" : ""} ${isDragging ? "dragging" : ""}`}
-      onMouseDown={handleMouseDown}
-      style={{ top: `${position}%` }}
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M15 18L9 12L15 6"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
+    <AnimatePresence>
+      {show && (
+        <motion.button
+          ref={buttonRef}
+          className={`sidebar-toggle show ${isDragging ? "dragging" : ""}`}
+          onMouseDown={handleMouseDown}
+          style={{ top: `${position}%` }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{
+            type: "spring",
+            damping: 25,
+            stiffness: 300,
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 };
 
