@@ -4,6 +4,12 @@
   "version": "1.0.0",
   "description": "Uma sidebar que pode ser escondida e exibida",
   "permissions": ["activeTab", "storage"],
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
   "background": {
     "service_worker": "dist/background.js"
   },
@@ -15,7 +21,13 @@
     }
   ],
   "action": {
-    "default_title": "Toggle Sidebar"
+    "default_title": "Toggle Sidebar",
+    "default_icon": {
+      "16": "logo.png",
+      "32": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
   },
   "web_accessible_resources": [
     {
