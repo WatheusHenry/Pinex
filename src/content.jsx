@@ -592,123 +592,124 @@ const Sidebar = () => {
           </svg>
         </button>
       ) : (
-        <>
-          {hasClipboardContent && (
+        <div className={`sidebar-menu ${isClosing ? "closing" : ""}`}>
+          {Object.entries(tabs).map(([tabId, tab]) => (
             <button
-              className="quick-paste-floating-btn"
-              onClick={handleQuickPaste}
-              title="Colar da área de transferência"
+              key={tabId}
+              className={`menu-item tab-menu-item ${
+                currentTab === tabId ? "active" : ""
+              }`}
+              onClick={() => switchTab(tabId)}
+              title={tab.name}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <rect
-                  x="8"
-                  y="2"
-                  width="8"
-                  height="4"
-                  rx="1"
-                  ry="1"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <span style={{ fontSize: "20px" }}>{tab.name.split(" ")[0]}</span>
             </button>
-          )}
+          ))}
 
-          <div className={`sidebar-menu ${isClosing ? "closing" : ""}`}>
-            {Object.entries(tabs).map(([tabId, tab]) => (
-              <button
-                key={tabId}
-                className={`menu-item tab-menu-item ${
-                  currentTab === tabId ? "active" : ""
-                }`}
-                onClick={() => switchTab(tabId)}
-                title={tab.name}
-              >
-                <span style={{ fontSize: "20px" }}>
-                  {tab.name.split(" ")[0]}
-                </span>
-              </button>
-            ))}
+          <div className="menu-divider"></div>
 
-            <div className="menu-divider"></div>
-
-            <button
-              className="menu-item"
-              onClick={() => {
-                const updatedTabs = {
-                  ...tabs,
-                  [currentTab]: {
-                    ...tabs[currentTab],
-                    images: [],
-                  },
-                };
-                setImages([]);
-                setTabs(updatedTabs);
-                chrome.storage.local.set({ sidebarTabs: updatedTabs });
-              }}
-              title="Limpar imagens desta aba"
+          <button
+            className={`menu-item quick-paste-menu-item ${
+              !hasClipboardContent ? "disabled" : ""
+            }`}
+            onClick={hasClipboardContent ? handleQuickPaste : undefined}
+            title={
+              hasClipboardContent
+                ? "Colar da área de transferência"
+                : "Nada para colar"
+            }
+            disabled={!hasClipboardContent}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+              <path
+                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <rect
+                x="8"
+                y="2"
+                width="8"
+                height="4"
+                rx="1"
+                ry="1"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
-            <button
-              className="menu-item"
-              onClick={() => {
-                setIsClosing(true);
-                setTimeout(() => {
-                  setIsVisible(false);
-                  setIsClosing(false);
-                }, 100);
-              }}
-              title="Fechar"
+          <button
+            className="menu-item"
+            onClick={() => {
+              const updatedTabs = {
+                ...tabs,
+                [currentTab]: {
+                  ...tabs[currentTab],
+                  images: [],
+                },
+              };
+              setImages([]);
+              setTabs(updatedTabs);
+              chrome.storage.local.set({ sidebarTabs: updatedTabs });
+            }}
+            title="Limpar imagens desta aba"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M18 6L6 18M6 6L18 18"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-        </>
+              <path
+                d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <button
+            className="menu-item"
+            onClick={() => {
+              setIsClosing(true);
+              setTimeout(() => {
+                setIsVisible(false);
+                setIsClosing(false);
+              }, 100);
+            }}
+            title="Fechar"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18M6 6L18 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       )}
 
       <div className="sidebar-content" style={{ width: `${width}px` }}>
@@ -935,7 +936,7 @@ function createFloatingViewer(mediaUrl, mediaType = "image") {
     const minimizeBtn = document.createElement("button");
     minimizeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19 12H5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     minimizeBtn.style.cssText =
-      "width: 36px; height: 36px; border: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;";
+      "width: 24px; height: 24px; border: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;";
     minimizeBtn.onmouseenter = () =>
       (minimizeBtn.style.background = "rgba(0,0,0,0.9)");
     minimizeBtn.onmouseleave = () =>
@@ -989,7 +990,7 @@ function createFloatingViewer(mediaUrl, mediaType = "image") {
     const closeBtn = document.createElement("button");
     closeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     closeBtn.style.cssText =
-      "width: 36px; height: 36px; border: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;";
+      "width: 24px; height: 24px; border: none; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;";
     closeBtn.onmouseenter = () =>
       (closeBtn.style.background = "rgba(0,0,0,0.9)");
     closeBtn.onmouseleave = () =>
