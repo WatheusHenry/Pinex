@@ -28,7 +28,7 @@ const Sidebar = () => {
   } = useSidebarState();
   const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
     useDragAndDrop(addImages);
-  const { handlePaste, handleQuickPaste } = useClipboard(addImages, isVisible);
+  const { handlePaste, handleQuickPaste } = useClipboard(addImages);
 
   useEffect(() => {
     chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_WIDTH], (result) => {

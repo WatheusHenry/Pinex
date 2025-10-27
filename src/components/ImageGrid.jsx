@@ -6,22 +6,22 @@ const ImageGrid = ({ images, onDeleteImage, onEditNote, isVisible }) => {
   return (
     <div className="image-grid">
       <AnimatePresence mode="popLayout">
-        {images.map((image, index) =>
+        {images.map((image) =>
           image.type === "note" ? (
-            
-              <NoteItem
-                note={image}
-                onEdit={onEditNote}
-                onDelete={onDeleteImage}
-                isVisible={isVisible}
-              />
+            <NoteItem
+              key={image.id}
+              note={image}
+              onEdit={onEditNote}
+              onDelete={onDeleteImage}
+              isVisible={isVisible}
+            />
           ) : (
-       
-              <MediaItem
-                image={image}
-                onDelete={onDeleteImage}
-                isVisible={isVisible}
-              />
+            <MediaItem
+              key={image.id}
+              image={image}
+              onDelete={onDeleteImage}
+              isVisible={isVisible}
+            />
           )
         )}
       </AnimatePresence>
