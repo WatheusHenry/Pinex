@@ -1,3 +1,12 @@
+@import url("./fonts/onest.css");
+
+/* Aplicar Onest globalmente na extensão */
+#chrome-sidebar-root,
+#chrome-sidebar-root * {
+  font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif !important;
+}
+
 #chrome-sidebar-root {
   all: initial;
   position: fixed;
@@ -7,7 +16,8 @@
   height: 80vh;
   max-height: 800px;
   z-index: 999999;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   background: transparent;
   pointer-events: none;
   user-select: none;
@@ -57,8 +67,8 @@
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
+  border: none;
+  border-radius: 0.8rem;
   cursor: grab;
   font-size: 20px;
   display: flex;
@@ -154,35 +164,20 @@
   border-radius: 0 2px 2px 0;
 }
 
-/* Light Mode (padrão) */
 .drop-zone {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 1.8rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: relative;
 }
 
 /* Remover scroll quando vazio */
 .drop-zone:has(.empty-state) {
   overflow-y: hidden;
-}
-
-/* Dark Mode */
-.sidebar-container.dark .drop-zone {
-  background: rgba(30, 30, 30, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.sidebar-container.dark .empty-state {
-  color: #b0b0b0;
-}
-
-.sidebar-container.dark .image-item {
-  background: #2a2a2a;
 }
 
 /* Scrollbar minimalista */
@@ -195,28 +190,15 @@
 }
 
 .drop-zone::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 
-.sidebar-container.dark .drop-zone::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-}
-
 .drop-zone::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.sidebar-container.dark .drop-zone::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
 .drop-zone.dragging {
-  background: rgba(232, 240, 254, 0.95);
-  border: 2px dashed #4285f4;
-}
-
-.sidebar-container.dark .drop-zone.dragging {
   background: rgba(66, 133, 244, 0.2);
   border: 2px dashed #4285f4;
 }
@@ -227,7 +209,7 @@
   align-items: center;
   justify-content: center;
   height: 95%;
-  color: #5f6368;
+  color: #b0b0b0;
   text-align: center;
   padding: 20px;
 }
@@ -246,9 +228,9 @@
 
 .image-item {
   position: relative;
-  border-radius: 8px;
+  border-radius: 1rem;
   overflow: hidden;
-  background: #f1f3f4;
+  background: #2a2a2a;
   cursor: pointer;
 }
 
@@ -265,15 +247,6 @@
 
 /* Links */
 .link-item {
-  background: linear-gradient(
-    135deg,
-    rgba(66, 133, 244, 0.1),
-    rgba(66, 133, 244, 0.05)
-  );
-  border: 1px solid rgba(66, 133, 244, 0.2);
-}
-
-.sidebar-container.dark .link-item {
   background: linear-gradient(
     135deg,
     rgba(66, 133, 244, 0.15),
@@ -295,16 +268,11 @@
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  background: rgba(66, 133, 244, 0.1);
+  background: rgba(66, 133, 244, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(66, 133, 244, 0.8);
-}
-
-.sidebar-container.dark .link-icon {
-  background: rgba(66, 133, 244, 0.2);
   color: rgba(66, 133, 244, 1);
 }
 
@@ -319,38 +287,21 @@
 .link-title {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: #fff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.sidebar-container.dark .link-title {
-  color: #fff;
 }
 
 .link-url {
   font-size: 12px;
-  color: #666;
+  color: #999;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.sidebar-container.dark .link-url {
-  color: #999;
-}
-
 .link-item:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(66, 133, 244, 0.15),
-    rgba(66, 133, 244, 0.08)
-  );
-  border-color: rgba(66, 133, 244, 0.3);
-}
-
-.sidebar-container.dark .link-item:hover {
   background: linear-gradient(
     135deg,
     rgba(66, 133, 244, 0.2),
@@ -496,30 +447,22 @@
   transition: all 0.2s ease;
 }
 
+.menu-item img {
+  display: block;
+  object-fit: contain;
+}
+
 .menu-item:last-child {
   border-bottom: none;
 }
 
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
 }
 
 .menu-item:active {
-  background: rgba(255, 255, 255, 0.3);
+  background: transparent;
   transform: scale(0.95);
-}
-
-/* Cores específicas para cada ação */
-.menu-item:nth-child(2):hover {
-  background: rgba(244, 67, 54, 0.3);
-}
-
-.menu-item:nth-child(3):hover {
-  background: rgba(76, 175, 80, 0.3);
-}
-
-.menu-item:nth-child(4):hover {
-  background: rgba(33, 150, 243, 0.3);
 }
 
 .sidebar-container.right .sidebar-menu {
@@ -580,12 +523,6 @@
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-.quick-paste-menu-item.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  animation: none;
-}
-
 @keyframes pulseGlow {
   0%,
   100% {
@@ -596,7 +533,7 @@
   }
 }
 
-.quick-paste-menu-item:hover:not(.disabled) {
+.quick-paste-menu-item:hover {
   animation: none;
 }
 
@@ -669,6 +606,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   word-break: break-word;
   flex: 1;
@@ -909,33 +847,14 @@
   cursor: not-allowed;
 }
 
-/* Dark mode adjustments for notes */
-.sidebar-container.dark .note-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-container.dark .note-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--accent-color);
-}
-
-.sidebar-container.dark .note-modal {
-  background: #1a1a1a;
-}
-
-.sidebar-container.dark .note-title-input,
-.sidebar-container.dark .note-content-input {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #e0e0e0;
-}
-
-.sidebar-container.dark .note-modal-button.cancel {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e0e0e0;
-}
-
-.sidebar-container.dark .note-modal-button.cancel:hover {
-  background: rgba(255, 255, 255, 0.15);
+/* CSS Variables for dark theme */
+:root {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: rgba(255, 255, 255, 0.05);
+  --bg-tertiary: rgba(255, 255, 255, 0.08);
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #999;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --accent-color: #4285f4;
 }

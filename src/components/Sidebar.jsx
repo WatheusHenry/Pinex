@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
 import ActionMenu from "./ActionMenu";
@@ -8,7 +8,6 @@ import ResizeHandle from "./ResizeHandle";
 import { useSidebarState } from "../hooks/useSidebarState";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
 import { useClipboard } from "../hooks/useClipboard";
-import { useDarkMode } from "../hooks/useDarkMode";
 import { SIDEBAR_CONFIG, STORAGE_KEYS, MESSAGES } from "../constants";
 import "../content.css";
 
@@ -29,11 +28,7 @@ const Sidebar = () => {
   } = useSidebarState();
   const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
     useDragAndDrop(addImages);
-  const { hasClipboardContent, handlePaste, handleQuickPaste } = useClipboard(
-    addImages,
-    isVisible
-  );
-  const isDarkMode = useDarkMode();
+  const { handlePaste, handleQuickPaste } = useClipboard(addImages, isVisible);
 
   useEffect(() => {
     chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_WIDTH], (result) => {
@@ -180,9 +175,7 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      className={`sidebar-container ${isVisible ? "visible" : ""} ${
-        isDarkMode ? "dark" : "light"
-      }`}
+      className={`sidebar-container ${isVisible ? "visible" : ""}`}
       initial={false}
       animate={{
         x: isVisible ? 0 : width + 10,
@@ -214,8 +207,8 @@ const Sidebar = () => {
               ease: [0.4, 0, 0.2, 1],
             }}
             style={{
-              top: "50%",
-              transform: "translateY(-50%)",
+              top: "40%",
+              transform: "translateY(-40%)",
             }}
           >
             <TabMenu
@@ -225,7 +218,6 @@ const Sidebar = () => {
             />
             <div className="menu-divider" />
             <ActionMenu
-              hasClipboardContent={hasClipboardContent}
               onQuickPaste={handleQuickPaste}
               onNewNote={handleNewNote}
               onUploadImage={handleUploadImage}

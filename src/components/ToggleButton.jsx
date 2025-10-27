@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LeftArrowIcon from "/public/LeftArrow.png";
 
 const ToggleButton = ({ show, onClick }) => {
   const [position, setPosition] = useState(50);
@@ -19,7 +20,7 @@ const ToggleButton = ({ show, onClick }) => {
     if (e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
-    
+
     setIsDragging(true);
     dragStartY.current = e.clientY;
     dragStartPosition.current = position;
@@ -31,14 +32,17 @@ const ToggleButton = ({ show, onClick }) => {
     const handleMouseMove = (e) => {
       const deltaY = e.clientY - dragStartY.current;
       const deltaPercent = (deltaY / window.innerHeight) * 100;
-      const newPosition = Math.max(5, Math.min(95, dragStartPosition.current + deltaPercent));
+      const newPosition = Math.max(
+        5,
+        Math.min(95, dragStartPosition.current + deltaPercent)
+      );
       setPosition(newPosition);
     };
 
     const handleMouseUp = (e) => {
       setIsDragging(false);
       localStorage.setItem("toggleButtonPosition", position.toString());
-      
+
       const rect = buttonRef.current?.getBoundingClientRect();
       if (rect) {
         const clickDistance = Math.abs(e.clientY - dragStartY.current);
@@ -76,15 +80,7 @@ const ToggleButton = ({ show, onClick }) => {
             stiffness: 300,
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <img src={LeftArrowIcon} alt="leftArrow" />
         </motion.button>
       )}
     </AnimatePresence>
