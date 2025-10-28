@@ -1,7 +1,5 @@
 import { createRoot } from "react-dom/client";
-import Sidebar from "./components/Sidebar";
-import { createFloatingViewer } from "./utils/floatingViewer";
-import { createNoteViewer } from "./utils/noteViewer";
+import Sidebar from "./components/sidebar/Sidebar";
 import "./content.css";
 
 const init = () => {
@@ -11,9 +9,6 @@ const init = () => {
 
   const root = createRoot(container);
   root.render(<Sidebar />);
-
-  window.createFloatingViewer = createFloatingViewer;
-  window.createNoteViewer = createNoteViewer;
 };
 
 if (document.readyState === "loading") {

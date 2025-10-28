@@ -5,11 +5,12 @@ import ActionMenu from "./ActionMenu";
 import DropZone from "./DropZone";
 import ToggleButton from "./ToggleButton";
 import ResizeHandle from "./ResizeHandle";
-import { useSidebarState } from "../hooks/useSidebarState";
-import { useDragAndDrop } from "../hooks/useDragAndDrop";
-import { useClipboard } from "../hooks/useClipboard";
-import { SIDEBAR_CONFIG, STORAGE_KEYS, MESSAGES } from "../constants";
-import "../content.css";
+import { useSidebarState } from "../../hooks/useSidebarState";
+import { useDragAndDrop } from "../../hooks/useDragAndDrop";
+import { useClipboard } from "../../hooks/useClipboard";
+import { SIDEBAR_CONFIG, STORAGE_KEYS, MESSAGES } from "../../constants";
+import { createNoteViewerWindow } from "../../utils/windowManager";
+import "../../content.css";
 
 const Sidebar = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -31,11 +32,21 @@ const Sidebar = () => {
   const { handlePaste, handleQuickPaste } = useClipboard(addImages);
 
   useEffect(() => {
-    chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_WIDTH], (result) => {
-      if (result[STORAGE_KEYS.SIDEBAR_WIDTH]) {
-        setWidth(result[STORAGE_KEYS.SIDEBAR_WIDTH]);
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_WIDTH], (result) => {
+          if (chrome.runtime.lastError) {
+            console.warn("Chrome storage error:", chrome.runtime.lastError);
+            return;
+          }
+          if (result[STORAGE_KEYS.SIDEBAR_WIDTH]) {
+            setWidth(result[STORAGE_KEYS.SIDEBAR_WIDTH]);
+          }
+        });
       }
-    });
+    } catch (error) {
+      console.warn("Error loading sidebar width:", error);
+    }
 
     const handleMouseMove = (e) => {
       const distanceFromRight = window.innerWidth - e.clientX;
@@ -46,7 +57,6 @@ const Sidebar = () => {
       if (message.action === MESSAGES.TOGGLE_SIDEBAR) {
         setIsVisible((prev) => !prev);
       } else if (message.action === "addTextNote" && message.text) {
-        // Adicionar nota de texto do menu de contexto
         const noteCard = {
           id: Date.now() + Math.random(),
           content: message.text.trim(),
@@ -54,7 +64,6 @@ const Sidebar = () => {
           type: "note",
         };
         addImages([noteCard]);
-        // Abrir sidebar se estiver fechada
         if (!isVisible) {
           setIsVisible(true);
         }
@@ -62,7 +71,14 @@ const Sidebar = () => {
     };
 
     document.addEventListener("mousemove", handleMouseMove);
-    chrome.runtime.onMessage.addListener(messageListener);
+
+    try {
+      if (chrome.runtime?.id) {
+        chrome.runtime.onMessage.addListener(messageListener);
+      }
+    } catch (error) {
+      console.warn("Error adding message listener:", error);
+    }
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
@@ -89,7 +105,13 @@ const Sidebar = () => {
 
     const handleMouseUp = () => {
       setIsResizing(false);
-      chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_WIDTH]: width });
+      try {
+        if (chrome.runtime?.id) {
+          chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_WIDTH]: width });
+        }
+      } catch (error) {
+        console.warn("Error saving sidebar width:", error);
+      }
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -106,15 +128,11 @@ const Sidebar = () => {
   };
 
   const handleNewNote = () => {
-    if (window.createNoteViewer) {
-      window.createNoteViewer(null, handleSaveNote);
-    }
+    createNoteViewerWindow(null, handleSaveNote);
   };
 
   const handleEditNote = (note) => {
-    if (window.createNoteViewer) {
-      window.createNoteViewer(note, handleSaveNote);
-    }
+    createNoteViewerWindow(note, handleSaveNote);
   };
 
   const handleUploadImage = () => {
@@ -151,11 +169,9 @@ const Sidebar = () => {
   };
 
   const handleSaveNote = (note) => {
-    // Verificar se é edição ou nova nota
     const existingNote = images.find((img) => img.id === note.id);
 
     if (existingNote) {
-      // Atualizar nota existente
       const updatedImages = images.map((img) =>
         img.id === note.id ? note : img
       );
@@ -166,9 +182,14 @@ const Sidebar = () => {
           images: updatedImages,
         },
       };
-      chrome.storage.local.set({ sidebarTabs: updatedTabs });
+      try {
+        if (chrome.runtime?.id) {
+          chrome.storage.local.set({ sidebarTabs: updatedTabs });
+        }
+      } catch (error) {
+        console.warn("Error saving note:", error);
+      }
     } else {
-      // Adicionar nova nota
       addImages([note]);
     }
   };

@@ -1,5 +1,3 @@
-import React from "react";
-
 const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
   const handleClick = () => {
     if (isVisible) {

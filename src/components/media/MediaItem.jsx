@@ -1,9 +1,9 @@
-import React from "react";
+import { createFloatingViewerWindow } from "../../utils/windowManager";
 
 const MediaItem = ({ image, onDelete, isVisible }) => {
   const handleClick = () => {
-    if (isVisible && window.createFloatingViewer) {
-      window.createFloatingViewer(image.url, image.type);
+    if (isVisible) {
+      createFloatingViewerWindow(image.url, image.type);
     }
   };
 

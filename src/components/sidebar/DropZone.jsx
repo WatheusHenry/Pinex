@@ -1,5 +1,5 @@
-import ImageGrid from "./ImageGrid";
-import EmptyState from "./EmptyState";
+import ImageGrid from "../media/ImageGrid";
+import EmptyState from "../common/EmptyState";
 
 const DropZone = ({
   images,

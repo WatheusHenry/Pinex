@@ -9,14 +9,28 @@ export const useSidebarState = () => {
 
   useEffect(() => {
     const loadData = () => {
-      chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_TABS, STORAGE_KEYS.CURRENT_TAB], (result) => {
-        const loadedTabs = result[STORAGE_KEYS.SIDEBAR_TABS] || DEFAULT_TABS;
-        const loadedCurrentTab = result[STORAGE_KEYS.CURRENT_TAB] || "tab1";
+      try {
+        if (!chrome.runtime?.id) {
+          console.warn("Extension context invalidated");
+          return;
+        }
+        
+        chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_TABS, STORAGE_KEYS.CURRENT_TAB], (result) => {
+          if (chrome.runtime.lastError) {
+            console.warn("Chrome storage error:", chrome.runtime.lastError);
+            return;
+          }
+          
+          const loadedTabs = result[STORAGE_KEYS.SIDEBAR_TABS] || DEFAULT_TABS;
+          const loadedCurrentTab = result[STORAGE_KEYS.CURRENT_TAB] || "tab1";
 
-        setTabs(loadedTabs);
-        setCurrentTab(loadedCurrentTab);
-        setImages(loadedTabs[loadedCurrentTab]?.images || []);
-      });
+          setTabs(loadedTabs);
+          setCurrentTab(loadedCurrentTab);
+          setImages(loadedTabs[loadedCurrentTab]?.images || []);
+        });
+      } catch (error) {
+        console.warn("Error loading data:", error);
+      }
     };
 
     loadData();
@@ -32,22 +46,35 @@ export const useSidebarState = () => {
     };
 
     const storageListener = (changes, area) => {
-      if (area === "local" && changes[STORAGE_KEYS.SIDEBAR_TABS]) {
-        const newTabs = changes[STORAGE_KEYS.SIDEBAR_TABS].newValue;
-        if (newTabs) {
-          setTabs(newTabs);
+      try {
+        if (area === "local" && changes[STORAGE_KEYS.SIDEBAR_TABS]) {
+          const newTabs = changes[STORAGE_KEYS.SIDEBAR_TABS].newValue;
+          if (newTabs) {
+            setTabs(newTabs);
+          }
         }
+      } catch (error) {
+        console.warn("Error in storage listener:", error);
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
-    chrome.storage.onChanged.addListener(storageListener);
+    
+    try {
+      chrome.storage.onChanged.addListener(storageListener);
+    } catch (error) {
+      console.warn("Error adding storage listener:", error);
+    }
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
-      chrome.storage.onChanged.removeListener(storageListener);
+      try {
+        chrome.storage.onChanged.removeListener(storageListener);
+      } catch (error) {
+        // Silently ignore if extension context is invalidated
+      }
     };
   }, []);
 
@@ -63,7 +90,14 @@ export const useSidebarState = () => {
 
     setImages(updatedImages);
     setTabs(updatedTabs);
-    chrome.storage.local.set({ sidebarTabs: updatedTabs });
+    
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.set({ sidebarTabs: updatedTabs });
+      }
+    } catch (error) {
+      console.warn("Error saving images:", error);
+    }
   };
 
   const deleteImage = (id) => {
@@ -78,7 +112,14 @@ export const useSidebarState = () => {
 
     setImages(updatedImages);
     setTabs(updatedTabs);
-    chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+    
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+      }
+    } catch (error) {
+      console.warn("Error deleting image:", error);
+    }
   };
 
   const switchTab = (tabId) => {
@@ -86,7 +127,14 @@ export const useSidebarState = () => {
 
     setCurrentTab(tabId);
     setImages(tabs[tabId]?.images || []);
-    chrome.storage.local.set({ [STORAGE_KEYS.CURRENT_TAB]: tabId });
+    
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.set({ [STORAGE_KEYS.CURRENT_TAB]: tabId });
+      }
+    } catch (error) {
+      console.warn("Error switching tab:", error);
+    }
   };
 
   const clearCurrentTab = () => {
@@ -99,7 +147,14 @@ export const useSidebarState = () => {
     };
     setImages([]);
     setTabs(updatedTabs);
-    chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+    
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+      }
+    } catch (error) {
+      console.warn("Error clearing tab:", error);
+    }
   };
 
   return {
