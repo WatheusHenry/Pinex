@@ -1,0 +1,188 @@
+/* ========================================
+   Sidebar Styles
+   ======================================== */
+
+.sidebar-container {
+  position: relative;
+  height: 100%;
+  background: transparent;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.sidebar-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/* Toggle Button */
+.sidebar-toggle {
+  position: absolute;
+  left: -46px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: var(--bg-sidebar);
+  backdrop-filter: var(--backdrop-blur-strong);
+  -webkit-backdrop-filter: var(--backdrop-blur-strong);
+  color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--transition-fast),
+    background var(--transition-fast), box-shadow var(--transition-fast);
+  animation: buttonFadeOut var(--transition-normal) ease forwards;
+  user-select: none;
+}
+
+@keyframes buttonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+@keyframes buttonFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+}
+
+.sidebar-toggle.show {
+  opacity: 1;
+  pointer-events: auto;
+  animation: buttonFadeIn var(--transition-normal) ease forwards;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(26, 26, 26, 1);
+  color: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.sidebar-toggle:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.sidebar-toggle.dragging {
+  cursor: grabbing;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-xl);
+  transition: none;
+}
+
+/* Menu Vertical */
+.sidebar-menu {
+  position: absolute;
+  left: -56px;
+  width: 36px;
+  background: var(--bg-sidebar);
+  backdrop-filter: var(--backdrop-blur-strong);
+  -webkit-backdrop-filter: var(--backdrop-blur-strong);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.menu-item {
+  width: 100%;
+  height: 36px;
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.menu-item img {
+  display: block;
+  object-fit: contain;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: transparent;
+}
+
+.menu-item:active {
+  background: transparent;
+  transform: scale(0.95);
+}
+
+/* Divisor do menu */
+.menu-divider {
+  width: 80%;
+  height: 1px;
+  background: var(--border-color-hover);
+  margin: auto;
+}
+
+/* Abas no menu */
+.tab-menu-item {
+  position: relative;
+}
+
+.tab-menu-item.active {
+  background: var(--accent-light);
+}
+
+.tab-menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: rgba(66, 133, 244, 0.8);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Botão de colagem rápida no menu */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    background: var(--accent-light) !important;
+  }
+  50% {
+    background: rgba(66, 133, 244, 0.45) !important;
+  }
+}
+
+.quick-paste-menu-item {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.quick-paste-menu-item:hover {
+  animation: none;
+}

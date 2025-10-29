@@ -4,18 +4,14 @@ import TabMenu from "./TabMenu";
 import ActionMenu from "./ActionMenu";
 import DropZone from "./DropZone";
 import ToggleButton from "./ToggleButton";
-import ResizeHandle from "./ResizeHandle";
 import { useSidebarState } from "../../hooks/useSidebarState";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useClipboard } from "../../hooks/useClipboard";
 import { SIDEBAR_CONFIG, STORAGE_KEYS, MESSAGES } from "../../constants";
 import { createNoteViewerWindow } from "../../utils/windowManager";
-import "../../content.css";
 
 const Sidebar = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [width, setWidth] = useState(SIDEBAR_CONFIG.DEFAULT_WIDTH);
-  const [isResizing, setIsResizing] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
   const {
@@ -32,22 +28,6 @@ const Sidebar = () => {
   const { handlePaste, handleQuickPaste } = useClipboard(addImages);
 
   useEffect(() => {
-    try {
-      if (chrome.runtime?.id) {
-        chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_WIDTH], (result) => {
-          if (chrome.runtime.lastError) {
-            console.warn("Chrome storage error:", chrome.runtime.lastError);
-            return;
-          }
-          if (result[STORAGE_KEYS.SIDEBAR_WIDTH]) {
-            setWidth(result[STORAGE_KEYS.SIDEBAR_WIDTH]);
-          }
-        });
-      }
-    } catch (error) {
-      console.warn("Error loading sidebar width:", error);
-    }
-
     const handleMouseMove = (e) => {
       const distanceFromRight = window.innerWidth - e.clientX;
       setShowButton(distanceFromRight < SIDEBAR_CONFIG.EDGE_TRIGGER_DISTANCE);
@@ -84,44 +64,6 @@ const Sidebar = () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
   }, [isVisible, addImages]);
-
-  const handleResizeStart = (e) => {
-    e.preventDefault();
-    setIsResizing(true);
-  };
-
-  useEffect(() => {
-    if (!isResizing) return;
-
-    const handleMouseMove = (e) => {
-      const newWidth = window.innerWidth - e.clientX;
-      if (
-        newWidth >= SIDEBAR_CONFIG.MIN_WIDTH &&
-        newWidth <= SIDEBAR_CONFIG.MAX_WIDTH
-      ) {
-        setWidth(newWidth);
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-      try {
-        if (chrome.runtime?.id) {
-          chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_WIDTH]: width });
-        }
-      } catch (error) {
-        console.warn("Error saving sidebar width:", error);
-      }
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing, width]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -184,7 +126,7 @@ const Sidebar = () => {
       };
       try {
         if (chrome.runtime?.id) {
-          chrome.storage.local.set({ sidebarTabs: updatedTabs });
+          chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
         }
       } catch (error) {
         console.warn("Error saving note:", error);
@@ -199,7 +141,7 @@ const Sidebar = () => {
       className={`sidebar-container ${isVisible ? "visible" : ""}`}
       initial={false}
       animate={{
-        x: isVisible ? 0 : width + 10,
+        x: isVisible ? 0 : SIDEBAR_CONFIG.DEFAULT_WIDTH + 10,
       }}
       transition={{
         type: "spring",
@@ -208,10 +150,9 @@ const Sidebar = () => {
         mass: 0.5,
       }}
       style={{
-        width: `${width}px`,
+        width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px`,
       }}
     >
-      {isVisible && <ResizeHandle onMouseDown={handleResizeStart} />}
 
       <AnimatePresence mode="wait">
         {!isVisible ? (
@@ -249,7 +190,7 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      <div className="sidebar-content" style={{ width: `${width}px` }}>
+      <div className="sidebar-content" style={{ width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px` }}>
         <DropZone
           images={images}
           isDragging={isDragging}

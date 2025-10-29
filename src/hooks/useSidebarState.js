@@ -93,7 +93,7 @@ export const useSidebarState = () => {
     
     try {
       if (chrome.runtime?.id) {
-        chrome.storage.local.set({ sidebarTabs: updatedTabs });
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
       }
     } catch (error) {
       console.warn("Error saving images:", error);

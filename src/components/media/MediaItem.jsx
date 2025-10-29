@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { createFloatingViewerWindow } from "../../utils/windowManager";
 
 const MediaItem = ({ image, onDelete, isVisible }) => {
@@ -8,16 +9,21 @@ const MediaItem = ({ image, onDelete, isVisible }) => {
   };
 
   return (
-    <div className="image-item">
+    <motion.div
+      className="image-item"
+      whileTap={{ scale: 0.95 }}
+      onTap={handleClick}
+      transition={{ duration: 0.1, ease: "easeOut" }}
+    >
       {image.type === "video" ? (
         <video
           src={image.url}
-          onClick={handleClick}
           style={{
             cursor: isVisible ? "pointer" : "default",
             width: "100%",
             height: "auto",
             display: "block",
+            pointerEvents: "none",
           }}
           muted
           loop
@@ -27,8 +33,10 @@ const MediaItem = ({ image, onDelete, isVisible }) => {
         <img
           src={image.url}
           alt="Saved"
-          onClick={handleClick}
-          style={{ cursor: isVisible ? "pointer" : "default" }}
+          style={{ 
+            cursor: isVisible ? "pointer" : "default",
+            pointerEvents: "none",
+          }}
         />
       )}
       <button
@@ -40,7 +48,7 @@ const MediaItem = ({ image, onDelete, isVisible }) => {
       >
         ×
       </button>
-    </div>
+    </motion.div>
   );
 };
 

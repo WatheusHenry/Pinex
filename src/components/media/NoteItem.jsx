@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
   const handleClick = () => {
     if (isVisible) {
@@ -27,7 +29,12 @@ const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
   };
 
   return (
-    <div className="note-item" onClick={handleClick}>
+    <motion.div
+      className="note-item"
+      onTap={handleClick}
+      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.1, ease: "easeOut" }}
+    >
       <p className="note-item-content">{note.content}</p>
 
       <div className="note-item-footer">
@@ -41,9 +48,23 @@ const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
           onDelete(note.id);
         }}
       >
-        ×
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 22 22"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M16.5 5.5L11 11M11 11L5.5 16.5M11 11L16.5 16.5M11 11L5.5 5.5"
+            stroke="white"
+            stroke-width="5.33333"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
       </button>
-    </div>
+    </motion.div>
   );
 };
 

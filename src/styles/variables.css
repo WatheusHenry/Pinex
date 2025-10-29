@@ -1,0 +1,50 @@
+/* ========================================
+   CSS Variables & Theme
+   ======================================== */
+
+:root {
+  /* Colors */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: rgba(255, 255, 255, 0.05);
+  --bg-tertiary: rgba(255, 255, 255, 0.08);
+  --bg-sidebar: rgba(26, 26, 26, 0.95);
+  
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #999;
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  
+  --accent-color: #4285f4;
+  --accent-hover: #5a8dee;
+  --accent-light: rgba(66, 133, 244, 0.3);
+  --accent-lighter: rgba(66, 133, 244, 0.15);
+  
+  --danger-color: rgba(220, 38, 38, 0.9);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 6px 20px rgba(0, 0, 0, 0.25);
+  
+  /* Backdrop */
+  --backdrop-blur: blur(10px);
+  --backdrop-blur-strong: blur(20px) saturate(180%);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  
+  /* Border Radius */
+  --radius-sm: 0.8rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.8rem;
+  --radius-xl: 12px;
+  
+  /* Z-index */
+  --z-sidebar: 999999;
+  --z-modal: 1000000;
+  --z-tooltip: 1000001;
+}

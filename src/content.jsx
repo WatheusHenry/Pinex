@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import Sidebar from "./components/sidebar/Sidebar";
-import "./content.css";
+import "./styles/index.css";
 
 const init = () => {
   const container = document.createElement("div");

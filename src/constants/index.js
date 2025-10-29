@@ -1,12 +1,11 @@
 export const DEFAULT_TABS = {
   tab1: { name: "🎨 Aba 1", images: [] },
-
 };
 
 export const SIDEBAR_CONFIG = {
   MIN_WIDTH: 200,
   MAX_WIDTH: 600,
-  DEFAULT_WIDTH: 220,
+  DEFAULT_WIDTH: 240,
   EDGE_TRIGGER_DISTANCE: 80,
 };
 
