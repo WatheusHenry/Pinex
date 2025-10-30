@@ -276,28 +276,27 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
         <button
           onClick={handleMinimize}
           style={{
-            width: '24px',
-            height: '24px',
+            width: '28px',
+            height: '28px',
             border: 'none',
             background: 'rgba(0,0,0,0.7)',
             backdropFilter: 'blur(10px)',
-            color: 'white',
-            borderRadius: '50%',
+            borderRadius: '6px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'all 0.2s',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.9)')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.7)')}
         >
           {isMinimized ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M19 12H5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           )}
@@ -305,24 +304,35 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
         <button
           onClick={onClose}
           style={{
-            width: '24px',
-            height: '24px',
+            width: '28px',
+            height: '28px',
             border: 'none',
             background: 'rgba(0,0,0,0.7)',
             backdropFilter: 'blur(10px)',
-            color: 'white',
-            borderRadius: '50%',
+            borderRadius: '6px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'all 0.2s',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.9)')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.7)')}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18M6 6L18 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16.5 5.5L11 11M11 11L5.5 16.5M11 11L16.5 16.5M11 11L5.5 5.5"
+              stroke="white"
+              strokeWidth="5.33333"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
       </div>

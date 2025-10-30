@@ -59,29 +59,52 @@
 /* Note Items */
 .note-item {
   position: relative;
-  background: var(--bg-sidebar);
+  background-color: #f5f3ed;
   border-radius: var(--radius-md);
-  padding: 12px;
+  padding: 12px 12px 12px 40px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  min-height: 80px;
+  min-height: 8rem;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid #ffffff15;
+  border: 1px solid #e0ddd5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  /* Linhas horizontais do caderno */
+  background-image: 
+    /* Linha vertical vermelha (margem) */ linear-gradient(
+      to right,
+      transparent 28px,
+      #e8b4b8 28px,
+      #e8b4b8 30px,
+      transparent 30px
+    ),
+    /* Linhas horizontais azuis */
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 23px,
+        #b8d4f1 23px,
+        #b8d4f1 24px
+      );
+  background-size: 100% 100%, 100% 40px;
+  background-position: 0 0, 0 0;
 }
 
+
 .note-item:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  border-color: var(--accent-color);
-  background: rgba(26, 26, 26, 1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  border-color: #d0cdc5;
+  transform: translateY(-1px);
 }
 
 .note-item-content {
   margin: 0;
-  font-size: 13px;
-  color: var(--text-primary);
-  line-height: 1.5;
+  font-size: 16px;
+  font-weight: "medium";
+  color: #2c3e50;
+  line-height: 24px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
@@ -89,6 +112,9 @@
   -webkit-box-orient: vertical;
   word-break: break-word;
   flex: 1;
+  font-family: "Onest", "Arial", sans-serif;
+  position: relative;
+  z-index: 1;
 }
 
 .note-item-footer {
@@ -100,7 +126,9 @@
 
 .note-item-date {
   font-size: 11px;
-  color: var(--text-tertiary);
+  color: #7f8c8d;
+  position: relative;
+  z-index: 1;
 }
 
 .note-item-delete {
@@ -110,9 +138,9 @@
   width: 24px;
   height: 24px;
   border: none;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(231, 76, 60, 0.8);
   color: white;
-  border-radius: 25%;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -120,6 +148,7 @@
   opacity: 0;
   transition: all var(--transition-fast);
   z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .note-item:hover .note-item-delete {
@@ -127,7 +156,8 @@
 }
 
 .note-item-delete:hover {
-  background: var(--danger-color);
+  background: rgba(192, 57, 43, 0.95);
+  transform: scale(1.05);
 }
 
 /* Link Items */

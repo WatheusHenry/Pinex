@@ -142,8 +142,6 @@ const NoteViewerWindow = ({ note, onSave, onClose, viewerId }) => {
             height: '32px',
             border: 'none',
             background: 'transparent',
-            color: '#999',
-            fontSize: '24px',
             cursor: 'pointer',
             borderRadius: '6px',
             display: 'flex',
@@ -153,14 +151,33 @@ const NoteViewerWindow = ({ note, onSave, onClose, viewerId }) => {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-            e.currentTarget.style.color = '#e0e0e0';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = '#999';
           }}
         >
-          ×
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 22 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ opacity: 0.6, transition: 'opacity 0.2s ease' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.6';
+            }}
+          >
+            <path
+              d="M16.5 5.5L11 11M11 11L5.5 16.5M11 11L16.5 16.5M11 11L5.5 5.5"
+              stroke="white"
+              strokeWidth="5.33333"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
 
