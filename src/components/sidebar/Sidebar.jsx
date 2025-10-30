@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
-import ActionMenu from "./ActionMenu";
 import DropZone from "./DropZone";
-import ToggleButton from "./ToggleButton";
+import FloatingMenu from "./FloatingMenu";
 import { useSidebarState } from "../../hooks/useSidebarState";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useClipboard } from "../../hooks/useClipboard";
@@ -154,13 +153,24 @@ const Sidebar = () => {
       }}
     >
 
-      <AnimatePresence mode="wait">
-        {!isVisible ? (
-          <ToggleButton show={showButton} onClick={() => setIsVisible(true)} />
-        ) : (
+      {/* Floating Menu - Botão + Menu de Ações */}
+      <FloatingMenu
+        show={showButton}
+        isVisible={isVisible}
+        onToggleSidebar={() => setIsVisible(true)}
+        onQuickPaste={handleQuickPaste}
+        onNewNote={handleNewNote}
+        onUploadImage={handleUploadImage}
+        onClear={clearCurrentTab}
+        onClose={handleClose}
+      />
+
+      {/* Menu de Abas (quando sidebar está aberta) */}
+      <AnimatePresence>
+        {isVisible && (
           <motion.div
-            key="menu"
-            className="sidebar-menu"
+            key="tab-menu"
+            className="sidebar-tab-menu"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
@@ -168,23 +178,11 @@ const Sidebar = () => {
               duration: 0.15,
               ease: [0.4, 0, 0.2, 1],
             }}
-            style={{
-              top: "40%",
-              transform: "translateY(-40%)",
-            }}
           >
             <TabMenu
               tabs={tabs}
               currentTab={currentTab}
               onTabSwitch={switchTab}
-            />
-            <div className="menu-divider" />
-            <ActionMenu
-              onQuickPaste={handleQuickPaste}
-              onNewNote={handleNewNote}
-              onUploadImage={handleUploadImage}
-              onClear={clearCurrentTab}
-              onClose={handleClose}
             />
           </motion.div>
         )}
