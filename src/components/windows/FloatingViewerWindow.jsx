@@ -1,12 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { VIEWER_CONFIG } from '../../constants';
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { VIEWER_CONFIG } from "../../constants";
 
-const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId }) => {
+const FloatingViewerWindow = ({
+  mediaUrl,
+  mediaType = "image",
+  onClose,
+  viewerId,
+}) => {
   const [dimensions, setDimensions] = useState({ width: 400, height: 300 });
   const [position, setPosition] = useState({
-    x: 100 + (parseInt(viewerId?.split('-')[2] || 0) % 10) * 30,
-    y: 100 + (parseInt(viewerId?.split('-')[2] || 0) % 10) * 30,
+    x: 100 + (parseInt(viewerId?.split("-")[2] || 0) % 10) * 30,
+    y: 100 + (parseInt(viewerId?.split("-")[2] || 0) % 10) * 30,
   });
   const [isMinimized, setIsMinimized] = useState(false);
   const [savedState, setSavedState] = useState(null);
@@ -14,18 +19,28 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState(null);
   const [showControls, setShowControls] = useState(false);
-  
+
   const dragRef = useRef({ startX: 0, startY: 0, startPosX: 0, startPosY: 0 });
-  const resizeRef = useRef({ startX: 0, startY: 0, startWidth: 0, startHeight: 0, startLeft: 0, startTop: 0 });
+  const resizeRef = useRef({
+    startX: 0,
+    startY: 0,
+    startWidth: 0,
+    startHeight: 0,
+    startLeft: 0,
+    startTop: 0,
+  });
   const aspectRatioRef = useRef(1);
 
   useEffect(() => {
     const loadMedia = () => {
-      if (mediaType === 'video') {
-        const video = document.createElement('video');
+      if (mediaType === "video") {
+        const video = document.createElement("video");
         video.src = mediaUrl;
         video.onloadedmetadata = () => {
-          const dims = calculateDimensions(video.videoWidth || 640, video.videoHeight || 480);
+          const dims = calculateDimensions(
+            video.videoWidth || 640,
+            video.videoHeight || 480
+          );
           setDimensions(dims);
           aspectRatioRef.current = dims.width / dims.height;
         };
@@ -52,8 +67,10 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
   }, [mediaUrl, mediaType]);
 
   const calculateDimensions = (naturalWidth, naturalHeight) => {
-    const maxWidth = window.innerWidth * (VIEWER_CONFIG?.MAX_SCREEN_RATIO || 0.8);
-    const maxHeight = window.innerHeight * (VIEWER_CONFIG?.MAX_SCREEN_RATIO || 0.8);
+    const maxWidth =
+      window.innerWidth * (VIEWER_CONFIG?.MAX_SCREEN_RATIO || 0.8);
+    const maxHeight =
+      window.innerHeight * (VIEWER_CONFIG?.MAX_SCREEN_RATIO || 0.8);
     let width = naturalWidth;
     let height = naturalHeight;
 
@@ -70,8 +87,12 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
   };
 
   const handleMouseDown = (e) => {
-    if (e.target.closest('button') || e.target.className?.includes('resize-handle')) return;
-    
+    if (
+      e.target.closest("button") ||
+      e.target.className?.includes("resize-handle")
+    )
+      return;
+
     setIsDragging(true);
     dragRef.current = {
       startX: e.clientX,
@@ -85,7 +106,7 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
     e.stopPropagation();
     setIsResizing(true);
     setResizeDirection(direction);
-    
+
     resizeRef.current = {
       startX: e.clientX,
       startY: e.clientY,
@@ -103,7 +124,7 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
       if (isDragging && !isMinimized) {
         const deltaX = e.clientX - dragRef.current.startX;
         const deltaY = e.clientY - dragRef.current.startY;
-        
+
         setPosition({
           x: dragRef.current.startPosX + deltaX,
           y: dragRef.current.startPosY + deltaY,
@@ -121,23 +142,41 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
 
         const aspectRatio = aspectRatioRef.current;
 
-        if (resizeDirection.includes('e')) {
-          newWidth = Math.max(VIEWER_CONFIG?.MIN_WIDTH || 200, resizeRef.current.startWidth + deltaX);
+        if (resizeDirection.includes("e")) {
+          newWidth = Math.max(
+            VIEWER_CONFIG?.MIN_WIDTH || 200,
+            resizeRef.current.startWidth + deltaX
+          );
           newHeight = newWidth / aspectRatio;
         }
-        if (resizeDirection.includes('w')) {
-          newWidth = Math.max(VIEWER_CONFIG?.MIN_WIDTH || 200, resizeRef.current.startWidth - deltaX);
+        if (resizeDirection.includes("w")) {
+          newWidth = Math.max(
+            VIEWER_CONFIG?.MIN_WIDTH || 200,
+            resizeRef.current.startWidth - deltaX
+          );
           newHeight = newWidth / aspectRatio;
-          newX = resizeRef.current.startLeft + resizeRef.current.startWidth - newWidth;
+          newX =
+            resizeRef.current.startLeft +
+            resizeRef.current.startWidth -
+            newWidth;
         }
-        if (resizeDirection.includes('s')) {
-          newHeight = Math.max(VIEWER_CONFIG?.MIN_HEIGHT || 150, resizeRef.current.startHeight + deltaY);
+        if (resizeDirection.includes("s")) {
+          newHeight = Math.max(
+            VIEWER_CONFIG?.MIN_HEIGHT || 150,
+            resizeRef.current.startHeight + deltaY
+          );
           newWidth = newHeight * aspectRatio;
         }
-        if (resizeDirection.includes('n')) {
-          newHeight = Math.max(VIEWER_CONFIG?.MIN_HEIGHT || 150, resizeRef.current.startHeight - deltaY);
+        if (resizeDirection.includes("n")) {
+          newHeight = Math.max(
+            VIEWER_CONFIG?.MIN_HEIGHT || 150,
+            resizeRef.current.startHeight - deltaY
+          );
           newWidth = newHeight * aspectRatio;
-          newY = resizeRef.current.startTop + resizeRef.current.startHeight - newHeight;
+          newY =
+            resizeRef.current.startTop +
+            resizeRef.current.startHeight -
+            newHeight;
         }
 
         setDimensions({ width: newWidth, height: newHeight });
@@ -151,19 +190,22 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
       setResizeDirection(null);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, isResizing, resizeDirection, isMinimized]);
 
   const handleMinimize = () => {
     if (!isMinimized) {
       setSavedState({ dimensions, position });
-      setDimensions({ width: VIEWER_CONFIG?.MINIMIZED_SIZE || 100, height: VIEWER_CONFIG?.MINIMIZED_SIZE || 100 });
+      setDimensions({
+        width: VIEWER_CONFIG?.MINIMIZED_SIZE || 100,
+        height: VIEWER_CONFIG?.MINIMIZED_SIZE || 100,
+      });
       setPosition({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
       setIsMinimized(true);
     } else {
@@ -175,32 +217,98 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
     }
   };
 
-  const resizeHandles = ['se', 'sw', 'ne', 'nw', 'n', 's', 'e', 'w'];
+  const resizeHandles = ["se", "sw", "ne", "nw", "n", "s", "e", "w"];
   const getHandleStyle = (direction) => {
     const baseStyle = {
-      position: 'absolute',
+      position: "absolute",
       opacity: showControls && !isMinimized ? 1 : 0,
-      transition: 'opacity 0.2s',
+      transition: "opacity 0.2s",
       zIndex: 10,
     };
 
     const cursors = {
-      se: 'nwse-resize', sw: 'nesw-resize', ne: 'nesw-resize', nw: 'nwse-resize',
-      n: 'ns-resize', s: 'ns-resize', e: 'ew-resize', w: 'ew-resize',
+      se: "nwse-resize",
+      sw: "nesw-resize",
+      ne: "nesw-resize",
+      nw: "nwse-resize",
+      n: "ns-resize",
+      s: "ns-resize",
+      e: "ew-resize",
+      w: "ew-resize",
     };
 
     const positions = {
-      se: { bottom: 0, right: 0, width: '20px', height: '20px', background: 'rgba(255,255,255,0.2)', borderRadius: '0 0 8px 0' },
-      sw: { bottom: 0, left: 0, width: '20px', height: '20px', background: 'rgba(255,255,255,0.2)', borderRadius: '0 0 0 8px' },
-      ne: { top: 0, right: 0, width: '20px', height: '20px', background: 'rgba(255,255,255,0.2)', borderRadius: '0 8px 0 0' },
-      nw: { top: 0, left: 0, width: '20px', height: '20px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px 0 0 0' },
-      n: { top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: '8px', background: 'transparent' },
-      s: { bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: '8px', background: 'transparent' },
-      e: { right: 0, top: '50%', transform: 'translateY(-50%)', width: '8px', height: '100%', background: 'transparent' },
-      w: { left: 0, top: '50%', transform: 'translateY(-50%)', width: '8px', height: '100%', background: 'transparent' },
+      se: {
+        bottom: 0,
+        right: 0,
+        width: "20px",
+        height: "20px",
+        background: "rgba(255,255,255,0.2)",
+        borderRadius: "0 0 8px 0",
+      },
+      sw: {
+        bottom: 0,
+        left: 0,
+        width: "20px",
+        height: "20px",
+        background: "rgba(255,255,255,0.2)",
+        borderRadius: "0 0 0 8px",
+      },
+      ne: {
+        top: 0,
+        right: 0,
+        width: "20px",
+        height: "20px",
+        background: "rgba(255,255,255,0.2)",
+        borderRadius: "0 8px 0 0",
+      },
+      nw: {
+        top: 0,
+        left: 0,
+        width: "20px",
+        height: "20px",
+        background: "rgba(255,255,255,0.2)",
+        borderRadius: "8px 0 0 0",
+      },
+      n: {
+        top: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        height: "8px",
+        background: "transparent",
+      },
+      s: {
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        height: "8px",
+        background: "transparent",
+      },
+      e: {
+        right: 0,
+        top: "50%",
+        transform: "translateY(-50%)",
+        width: "8px",
+        height: "100%",
+        background: "transparent",
+      },
+      w: {
+        left: 0,
+        top: "50%",
+        transform: "translateY(-50%)",
+        width: "8px",
+        height: "100%",
+        background: "transparent",
+      },
     };
 
-    return { ...baseStyle, ...positions[direction], cursor: cursors[direction] };
+    return {
+      ...baseStyle,
+      ...positions[direction],
+      cursor: cursors[direction],
+    };
   };
 
   return (
@@ -210,40 +318,41 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
       exit={{ opacity: 0, scale: 0.95, y: 10 }}
       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
       style={{
-        position: 'fixed',
+        position: "fixed",
         left: `${position.x}px`,
         top: `${position.y}px`,
         width: `${dimensions.width}px`,
         height: `${dimensions.height}px`,
-        background: 'rgba(20, 20, 20, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+        background: "rgba(20, 20, 20, 0.95)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
         zIndex: 999998,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '8px',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        overflow: 'hidden',
-        cursor: isDragging ? 'grabbing' : isMinimized ? 'pointer' : 'move',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "8px",
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        overflow: "hidden",
+        cursor: isDragging ? "grabbing" : isMinimized ? "pointer" : "move",
       }}
       onMouseDown={handleMouseDown}
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
       {/* Media Element */}
-      {mediaType === 'video' ? (
+      {mediaType === "video" ? (
         <video
           src={mediaUrl}
           controls
           loop
           style={{
-            maxWidth: '100%',
-            maxHeight: '100%',
-            objectFit: 'contain',
-            borderRadius: '4px',
-            pointerEvents: 'auto',
+            maxWidth: "100%",
+            maxHeight: "100%",
+            objectFit: "contain",
+            borderRadius: "4px",
+            pointerEvents: "auto",
           }}
         />
       ) : (
@@ -251,11 +360,11 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
           src={mediaUrl}
           alt="Floating viewer"
           style={{
-            maxWidth: '100%',
-            maxHeight: '100%',
-            objectFit: 'contain',
-            borderRadius: '4px',
-            pointerEvents: 'none',
+            maxWidth: "100%",
+            maxHeight: "100%",
+            objectFit: "contain",
+            borderRadius: "4px",
+            pointerEvents: "none",
           }}
         />
       )}
@@ -263,61 +372,81 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
       {/* Controls */}
       <div
         style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          display: 'flex',
-          gap: '8px',
+          position: "absolute",
+          top: "12px",
+          right: "12px",
+          display: "flex",
+          gap: "8px",
           opacity: showControls ? 1 : 0,
-          transition: 'opacity 0.2s',
+          transition: "opacity 0.2s",
           zIndex: 20,
         }}
       >
         <button
           onClick={handleMinimize}
           style={{
-            width: '28px',
-            height: '28px',
-            border: 'none',
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
+            width: "28px",
+            height: "28px",
+            border: "none",
+            background: "rgba(0,0,0,0.7)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "6px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.7)')}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.7)")
+          }
         >
           {isMinimized ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           ) : (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M19 12H5"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           )}
         </button>
         <button
           onClick={onClose}
           style={{
-            width: '28px',
-            height: '28px',
-            border: 'none',
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
+            width: "28px",
+            height: "28px",
+            border: "none",
+            background: "rgba(0,0,0,0.7)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "6px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.7)')}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.7)")
+          }
         >
           <svg
             width="14"
@@ -338,14 +467,15 @@ const FloatingViewerWindow = ({ mediaUrl, mediaType = 'image', onClose, viewerId
       </div>
 
       {/* Resize Handles */}
-      {!isMinimized && resizeHandles.map((direction) => (
-        <div
-          key={direction}
-          className={`resize-handle-${direction}`}
-          style={getHandleStyle(direction)}
-          onMouseDown={(e) => handleResizeStart(e, direction)}
-        />
-      ))}
+      {!isMinimized &&
+        resizeHandles.map((direction) => (
+          <div
+            key={direction}
+            className={`resize-handle-${direction}`}
+            style={getHandleStyle(direction)}
+            onMouseDown={(e) => handleResizeStart(e, direction)}
+          />
+        ))}
     </motion.div>
   );
 };

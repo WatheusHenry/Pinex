@@ -136,6 +136,40 @@ const Sidebar = () => {
     }
   };
 
+  const handleColorPicker = async () => {
+    try {
+      // Verifica se o navegador suporta EyeDropper API
+      if (!window.EyeDropper) {
+        alert('Seu navegador não suporta o seletor de cores. Use o Chrome 95+ ou Edge 95+');
+        return;
+      }
+
+      const eyeDropper = new window.EyeDropper();
+      const result = await eyeDropper.open();
+      
+      if (result?.sRGBHex) {
+        // Converte hex para RGB
+        const hex = result.sRGBHex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        
+        const colorCard = {
+          id: Date.now() + Math.random(),
+          color: hex,
+          rgb: `rgb(${r}, ${g}, ${b})`,
+          timestamp: Date.now(),
+          type: "color",
+        };
+        
+        addImages([colorCard]);
+      }
+    } catch (error) {
+      // Usuário cancelou ou erro
+      console.log('Color picker cancelled or error:', error);
+    }
+  };
+
   return (
     <motion.div
       className={`sidebar-container ${isVisible ? "visible" : ""}`}
@@ -159,12 +193,15 @@ const Sidebar = () => {
         onQuickPaste={handleQuickPaste}
         onNewNote={handleNewNote}
         onUploadImage={handleUploadImage}
+        onColorPicker={handleColorPicker}
         onClear={clearCurrentTab}
         onClose={handleClose}
         tabs={tabs}
         currentTab={currentTab}
         onTabSwitch={switchTab}
       />
+
+
 
       <div
         className="sidebar-content"

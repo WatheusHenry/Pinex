@@ -5,6 +5,7 @@ import LeftArrowIcon from "/public/LeftArrow.png";
 import NoteIcon from "/public/Note.png";
 import ClipBoardIcon from "/public/ClipBoard.png";
 import AddFromDeviceIcon from "/public/AddFromDevice.png";
+import ColorPickerIcon from "/public/ColorPicker.png";
 import CleanerIcon from "/public/Cleaner.png";
 
 const FloatingMenu = ({
@@ -14,6 +15,7 @@ const FloatingMenu = ({
   onQuickPaste,
   onNewNote,
   onUploadImage,
+  onColorPicker,
   onClear,
   onClose,
   tabs,
@@ -114,6 +116,12 @@ const FloatingMenu = ({
       onClick: onUploadImage,
       title: "Carregar imagem",
       alt: "Carregar imagem",
+    },
+    {
+      icon: ColorPickerIcon,
+      onClick: onColorPicker,
+      title: "Selecionar cor",
+      alt: "Selecionar cor",
     },
     { icon: CleanerIcon, onClick: onClear, title: "Limpar", alt: "Limpar" },
   ];
