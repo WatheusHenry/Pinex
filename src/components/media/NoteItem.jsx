@@ -31,7 +31,7 @@ const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
   return (
     <motion.div
       className="note-item"
-      onTap={handleClick}
+      onClick={handleClick}
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.1, ease: "easeOut" }}
     >
@@ -45,6 +45,7 @@ const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
         className="note-item-delete"
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
           onDelete(note.id);
         }}
       >
@@ -58,9 +59,9 @@ const NoteItem = ({ note, onEdit, onDelete, isVisible }) => {
           <path
             d="M16.5 5.5L11 11M11 11L5.5 16.5M11 11L16.5 16.5M11 11L5.5 5.5"
             stroke="white"
-            stroke-width="5.33333"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="5.33333"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       </button>

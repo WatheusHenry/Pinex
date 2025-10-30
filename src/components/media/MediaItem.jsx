@@ -12,7 +12,7 @@ const MediaItem = ({ image, onDelete, isVisible }) => {
     <motion.div
       className="image-item"
       whileTap={{ scale: 0.95 }}
-      onTap={handleClick}
+      onClick={handleClick}
       transition={{ duration: 0.1, ease: "easeOut" }}
     >
       {image.type === "video" ? (
@@ -43,10 +43,25 @@ const MediaItem = ({ image, onDelete, isVisible }) => {
         className="image-delete"
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
           onDelete(image.id);
         }}
       >
-        ×
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 22 22"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M16.5 5.5L11 11M11 11L5.5 16.5M11 11L16.5 16.5M11 11L5.5 5.5"
+            stroke="white"
+            strokeWidth="5.33333"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
     </motion.div>
   );

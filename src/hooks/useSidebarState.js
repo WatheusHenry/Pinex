@@ -79,7 +79,7 @@ export const useSidebarState = () => {
   }, []);
 
   const addImages = (newImages) => {
-    const updatedImages = [...newImages, ...images];
+    const updatedImages = [...images, ...newImages];
     const updatedTabs = {
       ...tabs,
       [currentTab]: {
