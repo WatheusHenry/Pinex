@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import TabMenu from "./TabMenu";
 import LeftArrowIcon from "/public/LeftArrow.png";
 import NoteIcon from "/public/Note.png";
 import ClipBoardIcon from "/public/ClipBoard.png";
@@ -15,6 +16,9 @@ const FloatingMenu = ({
   onUploadImage,
   onClear,
   onClose,
+  tabs,
+  currentTab,
+  onTabSwitch,
 }) => {
   const [position, setPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -202,6 +206,37 @@ const FloatingMenu = ({
                     />
                   </motion.button>
                 ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Divisor */}
+          {isMenuOpen && <div className="menu-divider"></div>}
+
+          {/* Menu de Abas */}
+          <AnimatePresence>
+            {isMenuOpen && tabs && (
+              <motion.div
+                className="floating-menu-tabs"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{
+                  height: {
+                    duration: 0.5,
+                    ease: [0.4, 0, 0.2, 1],
+                  },
+                  opacity: {
+                    duration: 0.3,
+                    delay: 0.1,
+                  },
+                }}
+              >
+                <TabMenu
+                  tabs={tabs}
+                  currentTab={currentTab}
+                  onTabSwitch={onTabSwitch}
+                />
               </motion.div>
             )}
           </AnimatePresence>

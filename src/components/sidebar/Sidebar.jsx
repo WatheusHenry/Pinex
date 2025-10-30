@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import TabMenu from "./TabMenu";
+import { motion } from "framer-motion";
 import DropZone from "./DropZone";
 import FloatingMenu from "./FloatingMenu";
 import { useSidebarState } from "../../hooks/useSidebarState";
@@ -152,7 +151,7 @@ const Sidebar = () => {
         width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px`,
       }}
     >
-      {/* Floating Menu - Botão + Menu de Ações */}
+      {/* Floating Menu - Botão + Abas + Menu de Ações */}
       <FloatingMenu
         show={showButton}
         isVisible={isVisible}
@@ -162,30 +161,10 @@ const Sidebar = () => {
         onUploadImage={handleUploadImage}
         onClear={clearCurrentTab}
         onClose={handleClose}
+        tabs={tabs}
+        currentTab={currentTab}
+        onTabSwitch={switchTab}
       />
-
-      {/* Menu de Abas (quando sidebar está aberta) */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            key="tab-menu"
-            className="sidebar-tab-menu"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{
-              duration: 0.15,
-              ease: [0.4, 0, 0.2, 1],
-            }}
-          >
-            <TabMenu
-              tabs={tabs}
-              currentTab={currentTab}
-              onTabSwitch={switchTab}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div
         className="sidebar-content"
