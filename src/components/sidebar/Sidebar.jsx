@@ -125,7 +125,9 @@ const Sidebar = () => {
       };
       try {
         if (chrome.runtime?.id) {
-          chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+          chrome.storage.local.set({
+            [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs,
+          });
         }
       } catch (error) {
         console.warn("Error saving note:", error);
@@ -143,16 +145,13 @@ const Sidebar = () => {
         x: isVisible ? 0 : SIDEBAR_CONFIG.DEFAULT_WIDTH + 10,
       }}
       transition={{
-        type: "spring",
-        damping: 30,
-        stiffness: 500,
-        mass: 0.5,
+        duration: 0.5,
+        ease: [0.6, -0.05, 0.01, 0.99], // Easing suave customizado
       }}
       style={{
         width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px`,
       }}
     >
-
       {/* Floating Menu - Botão + Menu de Ações */}
       <FloatingMenu
         show={showButton}
@@ -188,7 +187,10 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      <div className="sidebar-content" style={{ width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px` }}>
+      <div
+        className="sidebar-content"
+        style={{ width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px` }}
+      >
         <DropZone
           images={images}
           isDragging={isDragging}

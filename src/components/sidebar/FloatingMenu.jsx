@@ -132,9 +132,10 @@ const FloatingMenu = ({
           }}
           exit={{ opacity: 0, x: -20 }}
           transition={{
-            opacity: { duration: 0.2 },
-            x: { type: "spring", damping: 25, stiffness: 300 },
-            height: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+            type: "spring",
+            damping: 25,
+            stiffness: 300,
+            duration: 0.2,
           }}
         >
           {/* Botão Principal */}
@@ -160,10 +161,19 @@ const FloatingMenu = ({
             {isMenuOpen && (
               <motion.div
                 className="floating-menu-actions"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{
+                  height: {
+                    duration: 0.5,
+                    ease: [0.4, 0, 0.2, 1],
+                  },
+                  opacity: {
+                    duration: 0.3,
+                    delay: 0.1,
+                  },
+                }}
               >
                 {menuButtons.map((button, index) => (
                   <motion.button
@@ -174,13 +184,12 @@ const FloatingMenu = ({
                       button.onClick();
                     }}
                     title={button.title}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     transition={{
-                      delay: index * 0.05,
+                      delay: index * 0.08,
                       duration: 0.2,
-                      ease: [0.4, 0, 0.2, 1],
                     }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
