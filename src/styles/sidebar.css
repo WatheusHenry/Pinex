@@ -79,18 +79,18 @@
 .sidebar-toggle:hover {
   background: rgba(26, 26, 26, 1);
   color: rgba(255, 255, 255, 1);
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-50%) scale(1.02);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
 }
 
 .sidebar-toggle:active {
-  transform: translateY(-50%) scale(0.95);
+  transform: translateY(-50%);
 }
 
 .sidebar-toggle.dragging {
   cursor: grabbing;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-50%);
   transition: none;
 }
 
@@ -98,7 +98,9 @@
 .sidebar-menu {
   position: absolute;
   left: -56px;
-  width: 36px;
+  width: fit-content;
+  gap: 4px;
+  padding: 4px;
   background: var(--bg-sidebar);
   backdrop-filter: var(--backdrop-blur-strong);
   -webkit-backdrop-filter: var(--backdrop-blur-strong);
@@ -106,12 +108,17 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-item {
-  width: 100%;
-  height: 36px;
+  width: 2rem;
+  height: 2rem;
   background: transparent;
+  border-radius: 0.5rem;
   color: white;
   border: none;
   cursor: pointer;
@@ -131,15 +138,14 @@
 }
 
 .menu-item:hover {
-  background: transparent;
+  background: var(--accent-light);
 }
 
 .menu-item:active {
-  background: transparent;
+  background: var(--accent-light);
   transform: scale(0.95);
 }
 
-/* Divisor do menu */
 .menu-divider {
   width: 80%;
   height: 1px;
@@ -168,21 +174,3 @@
   border-radius: 0 2px 2px 0;
 }
 
-/* Botão de colagem rápida no menu */
-@keyframes pulseGlow {
-  0%,
-  100% {
-    background: var(--accent-light) !important;
-  }
-  50% {
-    background: rgba(66, 133, 244, 0.45) !important;
-  }
-}
-
-.quick-paste-menu-item {
-  animation: pulseGlow 2s ease-in-out infinite;
-}
-
-.quick-paste-menu-item:hover {
-  animation: none;
-}
