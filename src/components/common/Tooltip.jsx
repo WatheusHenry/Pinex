@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, cloneElement } from "react";
 import { createPortal } from "react-dom";
-import "./Tooltip.css";
+import "../../styles/Tooltip.css";
 
 const Tooltip = ({ children, text, position = "right" }) => {
   const [isVisible, setIsVisible] = useState(false);
