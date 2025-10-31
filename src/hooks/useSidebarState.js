@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DEFAULT_TABS, STORAGE_KEYS } from "../constants";
-
+import { createSyncChannel } from "../db";
 
 export const useSidebarState = () => {
   const [currentTab, setCurrentTab] = useState("tab1");
   const [tabs, setTabs] = useState(DEFAULT_TABS);
   const [images, setImages] = useState([]);
+  const syncChannelRef = useRef(null);
+  const isUpdatingRef = useRef(false);
 
   useEffect(() => {
+    // Criar canal de sincronização
+    syncChannelRef.current = createSyncChannel();
+
     const loadData = () => {
       try {
         if (!chrome.runtime?.id) {
@@ -45,12 +50,14 @@ export const useSidebarState = () => {
       loadData();
     };
 
+    // Listener para mudanças no storage
     const storageListener = (changes, area) => {
       try {
         if (area === "local" && changes[STORAGE_KEYS.SIDEBAR_TABS]) {
           const newTabs = changes[STORAGE_KEYS.SIDEBAR_TABS].newValue;
-          if (newTabs) {
+          if (newTabs && !isUpdatingRef.current) {
             setTabs(newTabs);
+            setImages(newTabs[currentTab]?.images || []);
           }
         }
       } catch (error) {
@@ -58,6 +65,36 @@ export const useSidebarState = () => {
       }
     };
 
+    // Listener para sincronização entre abas via BroadcastChannel
+    const syncListener = (event) => {
+      if (isUpdatingRef.current) return;
+
+      const { type, data } = event.data;
+
+      switch (type) {
+        case "TABS_UPDATED":
+          setTabs(data.tabs);
+          setImages(data.tabs[currentTab]?.images || []);
+          break;
+        case "TAB_SWITCHED":
+          setCurrentTab(data.tabId);
+          setImages(data.tabs[data.tabId]?.images || []);
+          break;
+        case "IMAGES_ADDED":
+        case "IMAGE_DELETED":
+        case "TAB_CLEARED":
+        case "NOTE_UPDATED":
+          setTabs(data.tabs);
+          if (data.affectedTab === currentTab) {
+            setImages(data.tabs[data.affectedTab]?.images || []);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    syncChannelRef.current.addEventListener("message", syncListener);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
     
@@ -68,6 +105,8 @@ export const useSidebarState = () => {
     }
 
     return () => {
+      syncChannelRef.current?.removeEventListener("message", syncListener);
+      syncChannelRef.current?.close();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
       try {
@@ -76,7 +115,7 @@ export const useSidebarState = () => {
         // Silently ignore if extension context is invalidated
       }
     };
-  }, []);
+  }, [currentTab]);
 
   const addImages = (newImages) => {
     const updatedImages = [...images, ...newImages];
@@ -88,15 +127,27 @@ export const useSidebarState = () => {
       },
     };
 
+    isUpdatingRef.current = true;
     setImages(updatedImages);
     setTabs(updatedTabs);
     
     try {
       if (chrome.runtime?.id) {
-        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs }, () => {
+          // Notificar outras abas via BroadcastChannel
+          syncChannelRef.current?.postMessage({
+            type: "IMAGES_ADDED",
+            data: {
+              tabs: updatedTabs,
+              affectedTab: currentTab,
+            },
+          });
+          isUpdatingRef.current = false;
+        });
       }
     } catch (error) {
       console.warn("Error saving images:", error);
+      isUpdatingRef.current = false;
     }
   };
 
@@ -110,30 +161,54 @@ export const useSidebarState = () => {
       },
     };
 
+    isUpdatingRef.current = true;
     setImages(updatedImages);
     setTabs(updatedTabs);
     
     try {
       if (chrome.runtime?.id) {
-        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs }, () => {
+          // Notificar outras abas via BroadcastChannel
+          syncChannelRef.current?.postMessage({
+            type: "IMAGE_DELETED",
+            data: {
+              tabs: updatedTabs,
+              affectedTab: currentTab,
+            },
+          });
+          isUpdatingRef.current = false;
+        });
       }
     } catch (error) {
       console.warn("Error deleting image:", error);
+      isUpdatingRef.current = false;
     }
   };
 
   const switchTab = (tabId) => {
     if (tabId === currentTab) return;
 
+    isUpdatingRef.current = true;
     setCurrentTab(tabId);
     setImages(tabs[tabId]?.images || []);
     
     try {
       if (chrome.runtime?.id) {
-        chrome.storage.local.set({ [STORAGE_KEYS.CURRENT_TAB]: tabId });
+        chrome.storage.local.set({ [STORAGE_KEYS.CURRENT_TAB]: tabId }, () => {
+          // Notificar outras abas via BroadcastChannel
+          syncChannelRef.current?.postMessage({
+            type: "TAB_SWITCHED",
+            data: {
+              tabId,
+              tabs,
+            },
+          });
+          isUpdatingRef.current = false;
+        });
       }
     } catch (error) {
       console.warn("Error switching tab:", error);
+      isUpdatingRef.current = false;
     }
   };
 
@@ -145,15 +220,28 @@ export const useSidebarState = () => {
         images: [],
       },
     };
+
+    isUpdatingRef.current = true;
     setImages([]);
     setTabs(updatedTabs);
     
     try {
       if (chrome.runtime?.id) {
-        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs });
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs }, () => {
+          // Notificar outras abas via BroadcastChannel
+          syncChannelRef.current?.postMessage({
+            type: "TAB_CLEARED",
+            data: {
+              tabs: updatedTabs,
+              affectedTab: currentTab,
+            },
+          });
+          isUpdatingRef.current = false;
+        });
       }
     } catch (error) {
       console.warn("Error clearing tab:", error);
+      isUpdatingRef.current = false;
     }
   };
 

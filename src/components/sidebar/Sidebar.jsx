@@ -126,6 +126,17 @@ const Sidebar = () => {
         if (chrome.runtime?.id) {
           chrome.storage.local.set({
             [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs,
+          }, () => {
+            // Notificar outras abas via BroadcastChannel
+            const syncChannel = new BroadcastChannel('sidebar-sync');
+            syncChannel.postMessage({
+              type: "NOTE_UPDATED",
+              data: {
+                tabs: updatedTabs,
+                affectedTab: currentTab,
+              },
+            });
+            syncChannel.close();
           });
         }
       } catch (error) {
