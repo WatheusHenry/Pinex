@@ -77,11 +77,9 @@ const FloatingMenu = ({
         const clickDistance = Math.abs(e.clientY - dragStartY.current);
         if (clickDistance < 5) {
           if (isVisible) {
-            // Se sidebar está aberta, fechar tudo com coordenação
-            setIsMenuOpen(false);        // 1. Fecha o menu primeiro (300ms)
-            setTimeout(() => onClose(), 300);  // 2. Depois fecha a sidebar junto com o menu
+            setIsMenuOpen(false);       
+            setTimeout(() => onClose(), 200); 
           } else {
-            // Se sidebar está fechada, abrir sidebar (menu abrirá automaticamente via useEffect)
             onToggleSidebar();
           }
         }
@@ -150,11 +148,11 @@ const FloatingMenu = ({
             stiffness: 300,
             duration: 0.2,
             opacity: {
-              duration: 0.3,
+              duration: 0.2,
               ease: "easeOut",
             },
             right: {
-              duration: 0.3,
+              duration: 0.2,
               ease: [0.4, 0, 0.2, 1],
             },
           }}
@@ -187,7 +185,7 @@ const FloatingMenu = ({
                 exit={{ opacity: 0, height: 0 }}
                 transition={{
                   height: {
-                    duration: 0.3,
+                    duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
                   },
                   opacity: {
@@ -240,7 +238,7 @@ const FloatingMenu = ({
                 exit={{ opacity: 0, height: 0 }}
                 transition={{
                   height: {
-                    duration: 0.3,
+                    duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
                   },
                   opacity: {
