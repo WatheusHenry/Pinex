@@ -1,5 +1,5 @@
 export const DEFAULT_TABS = {
-  tab1: { name: "Aba Principal", images: [] },
+  tab1: { name: "Seus pins", images: [] },
 };
 
 export const SIDEBAR_CONFIG = {

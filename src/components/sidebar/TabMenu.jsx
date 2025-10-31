@@ -1,15 +1,16 @@
+import Tooltip from "../common/Tooltip";
+
 const TabMenu = ({ tabs, currentTab, onTabSwitch }) => {
   return (
     <>
       {Object.entries(tabs).map(([tabId, tab]) => (
-        <button
-          key={tabId}
-          className={`menu-item tab-menu-item ${
-            currentTab === tabId ? "active" : ""
-          }`}
-          onClick={() => onTabSwitch(tabId)}
-          title={tab.name}
-        >
+        <Tooltip key={tabId} text={tab.name} position="left">
+          <button
+            className={`menu-item tab-menu-item ${
+              currentTab === tabId ? "active" : ""
+            }`}
+            onClick={() => onTabSwitch(tabId)}
+          >
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +36,8 @@ const TabMenu = ({ tabs, currentTab, onTabSwitch }) => {
               ></path>
             </svg>{" "}
           </span>
-        </button>
+          </button>
+        </Tooltip>
       ))}
     </>
   );
