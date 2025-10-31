@@ -175,11 +175,11 @@ const Sidebar = () => {
       className={`sidebar-container ${isVisible ? "visible" : ""}`}
       initial={false}
       animate={{
-        x: isVisible ? 0 : SIDEBAR_CONFIG.DEFAULT_WIDTH + 10,
+        x: isVisible ? 0 : "100%",
       }}
       transition={{
-        duration: 0.5,
-        ease: [0.6, -0.05, 0.01, 0.99], // Easing suave customizado
+        duration: 0.3,
+        ease: "easeOut",
       }}
       style={{
         width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px`,

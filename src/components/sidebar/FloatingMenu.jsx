@@ -77,9 +77,9 @@ const FloatingMenu = ({
         const clickDistance = Math.abs(e.clientY - dragStartY.current);
         if (clickDistance < 5) {
           if (isVisible) {
-            // Se sidebar está aberta, fechar tudo
-            setIsMenuOpen(false);
-            onClose();
+            // Se sidebar está aberta, fechar tudo com coordenação
+            setIsMenuOpen(false);        // 1. Fecha o menu primeiro (300ms)
+            setTimeout(() => onClose(), 300);  // 2. Depois fecha a sidebar junto com o menu
           } else {
             // Se sidebar está fechada, abrir sidebar (menu abrirá automaticamente via useEffect)
             onToggleSidebar();
@@ -139,8 +139,9 @@ const FloatingMenu = ({
           style={{ top: `${position}%` }}
           initial={{ opacity: 0, x: -20 }}
           animate={{
-            opacity: 1,
+            opacity: isMenuOpen ? 1 : (show && !isVisible) ? 1 : 0,
             x: 0,
+            right: isVisible ? "calc(15rem + 2rem)" : "1rem",
           }}
           exit={{ opacity: 0, x: -20 }}
           transition={{
@@ -148,6 +149,14 @@ const FloatingMenu = ({
             damping: 25,
             stiffness: 300,
             duration: 0.2,
+            opacity: {
+              duration: 0.3,
+              ease: "easeOut",
+            },
+            right: {
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1],
+            },
           }}
         >
           {/* Botão Principal */}
@@ -178,12 +187,11 @@ const FloatingMenu = ({
                 exit={{ opacity: 0, height: 0 }}
                 transition={{
                   height: {
-                    duration: 0.5,
+                    duration: 0.3,
                     ease: [0.4, 0, 0.2, 1],
                   },
                   opacity: {
-                    duration: 0.3,
-                    delay: 0.1,
+                    duration: 0.2,
                   },
                 }}
               >
@@ -200,8 +208,9 @@ const FloatingMenu = ({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{
-                      delay: index * 0.08,
-                      duration: 0.2,
+                      opacity: {
+                        duration: 0.15,
+                      },
                     }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
@@ -231,12 +240,11 @@ const FloatingMenu = ({
                 exit={{ opacity: 0, height: 0 }}
                 transition={{
                   height: {
-                    duration: 0.5,
+                    duration: 0.3,
                     ease: [0.4, 0, 0.2, 1],
                   },
                   opacity: {
-                    duration: 0.3,
-                    delay: 0.1,
+                    duration: 0.2,
                   },
                 }}
               >
