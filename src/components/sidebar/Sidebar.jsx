@@ -16,6 +16,7 @@ const Sidebar = () => {
     tabs,
     currentTab,
     images,
+    isInitialized,
     switchTab,
     addImages,
     deleteImage,
@@ -219,18 +220,25 @@ const Sidebar = () => {
         className="sidebar-content"
         style={{ width: `${SIDEBAR_CONFIG.DEFAULT_WIDTH}px` }}
       >
-        <DropZone
-          images={images}
-          isDragging={isDragging}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onPaste={handlePaste}
-          onDeleteImage={deleteImage}
-          onEditNote={handleEditNote}
-          onReorder={reorderImages}
-          isVisible={isVisible}
-        />
+        {!isInitialized ? (
+          <div className="sidebar-loading">
+            <div className="loading-spinner"></div>
+            <p>Inicializando...</p>
+          </div>
+        ) : (
+          <DropZone
+            images={images}
+            isDragging={isDragging}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onPaste={handlePaste}
+            onDeleteImage={deleteImage}
+            onEditNote={handleEditNote}
+            onReorder={reorderImages}
+            isVisible={isVisible}
+          />
+        )}
       </div>
     </motion.div>
   );

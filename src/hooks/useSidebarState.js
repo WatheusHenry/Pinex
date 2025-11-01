@@ -6,12 +6,51 @@ export const useSidebarState = () => {
   const [currentTab, setCurrentTab] = useState("tab1");
   const [tabs, setTabs] = useState(DEFAULT_TABS);
   const [images, setImages] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const syncChannelRef = useRef(null);
   const isUpdatingRef = useRef(false);
+  const initPromiseRef = useRef(null);
 
   useEffect(() => {
     // Criar canal de sincronização
     syncChannelRef.current = createSyncChannel();
+
+    const initializeExtension = async () => {
+      try {
+        if (!chrome.runtime?.id) {
+          console.warn("Extension context invalidated");
+          setIsInitialized(true);
+          return;
+        }
+
+        chrome.storage.local.get([STORAGE_KEYS.SIDEBAR_TABS, STORAGE_KEYS.CURRENT_TAB], (result) => {
+          if (chrome.runtime.lastError) {
+            console.warn("Chrome storage error:", chrome.runtime.lastError);
+            setIsInitialized(true);
+            return;
+          }
+          
+          const loadedTabs = result[STORAGE_KEYS.SIDEBAR_TABS] || DEFAULT_TABS;
+          const loadedCurrentTab = result[STORAGE_KEYS.CURRENT_TAB] || "tab1";
+
+          // Se não há dados salvos, salvar dados padrão
+          if (!result[STORAGE_KEYS.SIDEBAR_TABS]) {
+            chrome.storage.local.set({ 
+              [STORAGE_KEYS.SIDEBAR_TABS]: DEFAULT_TABS,
+              [STORAGE_KEYS.CURRENT_TAB]: "tab1"
+            });
+          }
+
+          setTabs(loadedTabs);
+          setCurrentTab(loadedCurrentTab);
+          setImages(loadedTabs[loadedCurrentTab]?.images || []);
+          setIsInitialized(true);
+        });
+      } catch (error) {
+        console.warn("Error initializing extension:", error);
+        setIsInitialized(true);
+      }
+    };
 
     const loadData = () => {
       try {
@@ -38,16 +77,29 @@ export const useSidebarState = () => {
       }
     };
 
-    loadData();
+    // Inicializar apenas uma vez
+    if (!initPromiseRef.current) {
+      initPromiseRef.current = initializeExtension();
+    }
+
+    // Timeout de segurança para evitar loading infinito
+    const safetyTimeout = setTimeout(() => {
+      if (!isInitialized) {
+        console.warn("Initialization timeout, forcing initialization");
+        setIsInitialized(true);
+      }
+    }, 2000);
 
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
+      if (!document.hidden && isInitialized) {
         loadData();
       }
     };
 
     const handleFocus = () => {
-      loadData();
+      if (isInitialized) {
+        loadData();
+      }
     };
 
     // Listener para mudanças no storage
@@ -106,6 +158,7 @@ export const useSidebarState = () => {
     }
 
     return () => {
+      clearTimeout(safetyTimeout);
       syncChannelRef.current?.removeEventListener("message", syncListener);
       syncChannelRef.current?.close();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -119,6 +172,12 @@ export const useSidebarState = () => {
   }, [currentTab]);
 
   const addImages = (newImages) => {
+    // Se não estiver inicializado, aguardar um pouco
+    if (!isInitialized) {
+      setTimeout(() => addImages(newImages), 100);
+      return;
+    }
+
     const updatedImages = [...images, ...newImages];
     const updatedTabs = {
       ...tabs,
@@ -283,6 +342,7 @@ export const useSidebarState = () => {
     tabs,
     currentTab,
     images,
+    isInitialized,
     switchTab,
     addImages,
     deleteImage,
