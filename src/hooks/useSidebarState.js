@@ -84,6 +84,7 @@ export const useSidebarState = () => {
         case "IMAGE_DELETED":
         case "TAB_CLEARED":
         case "NOTE_UPDATED":
+        case "IMAGES_REORDERED":
           setTabs(data.tabs);
           if (data.affectedTab === currentTab) {
             setImages(data.tabs[data.affectedTab]?.images || []);
@@ -245,6 +246,39 @@ export const useSidebarState = () => {
     }
   };
 
+  const reorderImages = (reorderedImages) => {
+    const updatedTabs = {
+      ...tabs,
+      [currentTab]: {
+        ...tabs[currentTab],
+        images: reorderedImages,
+      },
+    };
+
+    isUpdatingRef.current = true;
+    setImages(reorderedImages);
+    setTabs(updatedTabs);
+    
+    try {
+      if (chrome.runtime?.id) {
+        chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TABS]: updatedTabs }, () => {
+          // Notificar outras abas via BroadcastChannel
+          syncChannelRef.current?.postMessage({
+            type: "IMAGES_REORDERED",
+            data: {
+              tabs: updatedTabs,
+              affectedTab: currentTab,
+            },
+          });
+          isUpdatingRef.current = false;
+        });
+      }
+    } catch (error) {
+      console.warn("Error reordering images:", error);
+      isUpdatingRef.current = false;
+    }
+  };
+
   return {
     tabs,
     currentTab,
@@ -253,5 +287,6 @@ export const useSidebarState = () => {
     addImages,
     deleteImage,
     clearCurrentTab,
+    reorderImages,
   };
 };

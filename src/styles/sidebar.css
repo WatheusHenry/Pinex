@@ -2,6 +2,138 @@
    Sidebar Styles
    ======================================== */
 
+/* Drag and Drop para Reordenamento */
+.draggable-item {
+  position: relative;
+  cursor: grab;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+.draggable-item:active {
+  cursor: grabbing;
+}
+
+.draggable-item.dragging {
+  cursor: grabbing;
+  z-index: 1000;
+  filter: brightness(0.9);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Efeito de fantasma no espaço vazio */
+.draggable-item.dragging::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(74, 158, 255, 0.1);
+  border: 2px dashed rgba(74, 158, 255, 0.4);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Indicador visual de onde o item será solto */
+.draggable-item.drag-over::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(74, 158, 255, 0.3) 10%, 
+    rgba(74, 158, 255, 0.9) 30%,
+    #4a9eff 50%,
+    rgba(74, 158, 255, 0.9) 70%,
+    rgba(74, 158, 255, 0.3) 90%,
+    transparent 100%
+  );
+  border-radius: 3px;
+  box-shadow: 
+    0 0 12px rgba(74, 158, 255, 0.8),
+    0 0 20px rgba(74, 158, 255, 0.4);
+  animation: dragOverGlow 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+/* Efeito de brilho na linha indicadora */
+.draggable-item.drag-over::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 100%
+  );
+  border-radius: 3px;
+  animation: dragOverShine 1.5s ease-in-out infinite;
+  z-index: 11;
+}
+
+@keyframes dragOverGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scaleX(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+  }
+}
+
+@keyframes dragOverShine {
+  0% {
+    opacity: 0;
+    transform: translateX(-150%);
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+}
+
+/* Ícone de arrastar nos itens quando hover */
+.draggable-item:not(.dragging):hover::before {
+  content: "⋮⋮";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: -3px;
+  pointer-events: none;
+  z-index: 5;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  animation: dragIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes dragIconPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .sidebar-container {
   position: relative;
   height: 100%;

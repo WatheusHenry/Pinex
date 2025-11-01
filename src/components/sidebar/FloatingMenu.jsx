@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TabMenu from "./TabMenu";
+import { FLOATING_MENU_CONFIG } from "../../constants";
 import LeftArrowIcon from "/public/LeftArrow.png";
 import NoteIcon from "/public/Note.png";
 import ClipBoardIcon from "/public/ClipBoard.png";
@@ -22,12 +23,15 @@ const FloatingMenu = ({
   currentTab,
   onTabSwitch,
 }) => {
-  const [position, setPosition] = useState(50);
+  const [position, setPosition] = useState(FLOATING_MENU_CONFIG.DEFAULT_POSITION);
   const [isDragging, setIsDragging] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuHeight, setMenuHeight] = useState(0);
+  const [isAtLimit, setIsAtLimit] = useState(false);
   const buttonRef = useRef(null);
   const dragStartY = useRef(0);
-  const dragStartPosition = useRef(50);
+  const dragStartPosition = useRef(FLOATING_MENU_CONFIG.DEFAULT_POSITION);
+  const limitTimeoutRef = useRef(null);
 
   useEffect(() => {
     const savedPosition = localStorage.getItem("toggleButtonPosition");
@@ -45,6 +49,41 @@ const FloatingMenu = ({
     }
   }, [isVisible]);
 
+  useEffect(() => {
+    // Atualizar altura do menu quando ele abre/fecha
+    if (buttonRef.current) {
+      const height = buttonRef.current.offsetHeight;
+      setMenuHeight(height);
+    }
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    // Ajustar posição quando a janela é redimensionada
+    const handleResize = () => {
+      if (buttonRef.current) {
+        const height = buttonRef.current.offsetHeight;
+        setMenuHeight(height);
+        
+        // Recalcular limites
+        const menuHeightPercent = (height / window.innerHeight) * 100;
+        const topMarginPercent = (FLOATING_MENU_CONFIG.MIN_MARGIN_TOP / window.innerHeight) * 100;
+        const bottomMarginPercent = (FLOATING_MENU_CONFIG.MIN_MARGIN_BOTTOM / window.innerHeight) * 100;
+        
+        const minPosition = Math.max(topMarginPercent, menuHeightPercent / 2);
+        const maxPosition = Math.min(100 - bottomMarginPercent, 100 - menuHeightPercent / 2);
+        
+        // Ajustar posição se estiver fora dos limites
+        setPosition((prev) => Math.max(minPosition, Math.min(maxPosition, prev)));
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (limitTimeoutRef.current) clearTimeout(limitTimeoutRef.current);
+    };
+  }, [menuHeight]);
+
   const handleMouseDown = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -61,10 +100,26 @@ const FloatingMenu = ({
     const handleMouseMove = (e) => {
       const deltaY = e.clientY - dragStartY.current;
       const deltaPercent = (deltaY / window.innerHeight) * 100;
-      const newPosition = Math.max(
-        5,
-        Math.min(95, dragStartPosition.current + deltaPercent)
-      );
+      
+      // Calcular limites dinâmicos baseados na altura do menu e margens
+      const menuHeightPercent = (menuHeight / window.innerHeight) * 100;
+      const topMarginPercent = (FLOATING_MENU_CONFIG.MIN_MARGIN_TOP / window.innerHeight) * 100;
+      const bottomMarginPercent = (FLOATING_MENU_CONFIG.MIN_MARGIN_BOTTOM / window.innerHeight) * 100;
+      
+      const minPosition = Math.max(topMarginPercent, menuHeightPercent / 2);
+      const maxPosition = Math.min(100 - bottomMarginPercent, 100 - menuHeightPercent / 2);
+      
+      const desiredPosition = dragStartPosition.current + deltaPercent;
+      const newPosition = Math.max(minPosition, Math.min(maxPosition, desiredPosition));
+      
+      // Detectar se atingiu um limite
+      const hitLimit = desiredPosition < minPosition || desiredPosition > maxPosition;
+      if (hitLimit && !isAtLimit) {
+        setIsAtLimit(true);
+        if (limitTimeoutRef.current) clearTimeout(limitTimeoutRef.current);
+        limitTimeoutRef.current = setTimeout(() => setIsAtLimit(false), 300);
+      }
+      
       setPosition(newPosition);
     };
 
@@ -133,7 +188,7 @@ const FloatingMenu = ({
           ref={buttonRef}
           className={`floating-menu-container ${isDragging ? "dragging" : ""} ${
             isMenuOpen ? "open" : ""
-          }`}
+          } ${isAtLimit ? "at-limit" : ""}`}
           style={{ top: `${position}%` }}
           initial={{ opacity: 0, x: -20 }}
           animate={{

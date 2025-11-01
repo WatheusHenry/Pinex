@@ -20,6 +20,7 @@ const Sidebar = () => {
     addImages,
     deleteImage,
     clearCurrentTab,
+    reorderImages,
   } = useSidebarState();
   const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
     useDragAndDrop(addImages);
@@ -227,6 +228,7 @@ const Sidebar = () => {
           onPaste={handlePaste}
           onDeleteImage={deleteImage}
           onEditNote={handleEditNote}
+          onReorder={reorderImages}
           isVisible={isVisible}
         />
       </div>
